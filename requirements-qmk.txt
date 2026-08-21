@@ -1,1 +1,2 @@
+qmk
 -r src/vial-kb/vial-qmk/requirements.txt
