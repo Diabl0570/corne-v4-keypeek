@@ -1,5 +1,10 @@
 # OSX thumbnails cache file
 .DS_Store
 
+# Project-local development environment
+.devenv/
+.direnv/
+.venv/
+
 # idea
 .idea/*

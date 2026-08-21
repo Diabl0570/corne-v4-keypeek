@@ -67,7 +67,7 @@ vial-qmk-compile:
 	$(eval KR := ${kr})
 	$(eval KM := ${km})
 	$(eval FILE := $(shell echo "${kb}_${kr}_${km}" | sed 's/\//_/'))
-	cd src/vial-kb/vial-qmk; qmk compile -kb tmp/${KB}/${KR} -km ${KM}
+	cd src/vial-kb/vial-qmk; QMK_USERSPACE=$(shell pwd) qmk compile -kb tmp/${KB}/${KR} -km ${KM}
 	cp src/vial-kb/vial-qmk/.build/tmp_${FILE}.hex keyboards/${KB}/vial-kb/vial-qmk/.build/${FILE}.hex | true
 	cp src/vial-kb/vial-qmk/.build/tmp_${FILE}.uf2 keyboards/${KB}/vial-kb/vial-qmk/.build/${FILE}.uf2 | true
 

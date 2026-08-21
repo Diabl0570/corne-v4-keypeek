@@ -4,3 +4,6 @@
 [submodule "src/vial-kb/vial-qmk"]
 	path = src/vial-kb/vial-qmk
 	url = https://github.com/vial-kb/vial-qmk.git
+[submodule "modules/srwi"]
+	path = modules/srwi
+	url = https://github.com/srwi/qmk-modules.git
