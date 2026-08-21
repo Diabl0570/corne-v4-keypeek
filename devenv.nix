@@ -3,12 +3,15 @@
   packages = [
     pkgs.git
     pkgs.gnumake
+    pkgs.hidapi
+    pkgs.libusb1
     pkgs.pkg-config
     pkgs.python312
     pkgs.pkgsCross.arm-embedded.buildPackages.gcc
   ];
 
   env = {
+    DYLD_FALLBACK_LIBRARY_PATH = "${pkgs.hidapi}/lib";
     QMK_HOME = "$DEVENV_ROOT/src/vial-kb/vial-qmk";
     QMK_USERSPACE = "$DEVENV_ROOT";
   };
