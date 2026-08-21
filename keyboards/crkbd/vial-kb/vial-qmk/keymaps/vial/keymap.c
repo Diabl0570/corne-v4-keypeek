@@ -1,5 +1,13 @@
 #include QMK_KEYBOARD_H
 
+// KeyPeek raw HID handler. The module's own handler needs raw_hid_receive_user,
+// which vial-qmk does not have, so we chain the module in here instead.
+// KEYPEEK_DISABLE_RAW_HID_HANDLER is set in config.h.
+bool keypeek_handle_command(uint8_t *data, uint8_t length);
+
+void raw_hid_receive_kb(uint8_t *data, uint8_t length) {
+    keypeek_handle_command(data, length);
+}
 
 #ifdef LAYOUT_split_3x6_3_ex2
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
