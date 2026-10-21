@@ -17,6 +17,7 @@ static cm_state_t state;
 static cm_protocol_t protocol;
 static cm_press_t presses[CM_INPUTS];
 static uint8_t logical_owner[CM_LOGICAL_KEYS];
+static uint8_t logical_layer[CM_LOGICAL_KEYS];
 static uint32_t applied_revision;
 static bool initialized;
 static usb_configure_state_t usb_state = USB_DEVICE_STATE_NO_INIT;
@@ -76,6 +77,15 @@ static uint8_t logical_id(keypos_t key) {
     return key.row < MATRIX_ROWS ? key.row * MATRIX_COLS + key.col : CM_PHYSICAL_KEYS + key.col;
 }
 
+bool command_mode_source_layer(keypos_t key, uint8_t *layer) {
+    if (!(key.row < MATRIX_ROWS && key.col < MATRIX_COLS) &&
+        !((key.row == KEYLOC_ENCODER_CW || key.row == KEYLOC_ENCODER_CCW) && key.col < NUM_ENCODERS)) return false;
+    uint8_t slot = logical_id(key);
+    if (!logical_owner[slot]) return false;
+    *layer = logical_layer[slot];
+    return true;
+}
+
 static void expire_owners(void) {
     if (!action_tapping_is_idle()) return;
     for (uint8_t i = 0; i < CM_LOGICAL_KEYS; ++i) {
@@ -124,8 +134,14 @@ bool command_mode_pre_action(keyevent_t event) {
     if (!menu) cm_interrupt(&state, now);
     apply();
     keypos_t logical = logical_position(event);
-    uint16_t keycode = keymap_key_to_keycode(layer_switch_get_layer(logical), logical);
+    uint8_t slot = logical_id(logical);
     *press = (cm_press_t){.role = CM_COMMAND_KEY, .generation = state.home_generation, .pressed_at = now};
+    if (!menu && logical_owner[slot] && logical_owner[slot] != physical + 1) {
+        press->role = CM_COLLISION;
+        return false;
+    }
+    uint8_t layer = layer_switch_get_layer(logical);
+    uint16_t keycode = keymap_key_to_keycode(layer, logical);
     if (menu) {
         press->role = CM_MENU_KEY;
         cm_menu(&state, true, now);
@@ -140,13 +156,10 @@ bool command_mode_pre_action(keyevent_t event) {
         press->role = CM_FN_KEY;
         cm_control(&state, false, true);
     } else {
-        uint8_t slot = logical_id(logical);
         press->logical = slot;
-        if (logical_owner[slot] && logical_owner[slot] != physical + 1) press->role = CM_COLLISION;
-        else {
-            logical_owner[slot] = physical + 1;
-            press->role = CM_ORDINARY;
-        }
+        logical_layer[slot] = layer;
+        logical_owner[slot] = physical + 1;
+        press->role = CM_ORDINARY;
     }
     apply();
     return press->role == CM_ORDINARY;

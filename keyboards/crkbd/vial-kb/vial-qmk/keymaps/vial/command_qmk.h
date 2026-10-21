@@ -13,6 +13,7 @@ enum {
 };
 
 bool command_mode_pre_action(keyevent_t event);
+bool command_mode_source_layer(keypos_t key, uint8_t *layer);
 bool command_mode_handle_report(uint8_t *data, uint8_t length);
 void command_mode_configuration_activity(void);
 void command_mode_housekeeping(void);

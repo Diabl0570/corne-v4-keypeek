@@ -15,6 +15,27 @@ static uint32_t clock_ms;
 static uint16_t maps[16][8][7], encoders[16][4];
 static unsigned held[65536], presses_sent, releases_sent, space_taps, layer_notifications;
 static uint16_t last_press, last_release;
+static struct { uint16_t action; bool pressed; uint8_t mods; } output[4096];
+static unsigned output_count;
+
+static uint8_t host_mods(void) {
+    uint8_t mods = 0;
+    for (unsigned i = 0; i < 8; ++i) if (held[ACTION_KEY(KC_LEFT_CTRL + i)]) mods |= 1u << i;
+    for (unsigned i = 0; i < 4; ++i) if (held[ACTION_MODS(1u << i)]) mods |= 1u << i;
+    return mods;
+}
+
+static void emit(uint16_t code, bool pressed) {
+    if (pressed) {
+        assert(held[code] == 0); ++held[code]; last_press = code; ++presses_sent;
+    } else {
+        assert(held[code] == 1); --held[code]; last_release = code; ++releases_sent;
+    }
+    assert(output_count < sizeof(output) / sizeof(output[0]));
+    output[output_count].action = code;
+    output[output_count].pressed = pressed;
+    output[output_count++].mods = host_mods();
+}
 
 uint32_t timer_read32(void) { return clock_ms; }
 uint16_t timer_read(void) { return clock_ms; }
@@ -25,7 +46,7 @@ void post_process_record_quantum(keyrecord_t *record) { (void)record; }
 bool pre_process_record_modules(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; return true; }
 bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; return true; }
 bool process_record_quantum_helper(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; return true; }
-void tap_code(uint8_t code) { assert(code == KC_SPC); ++space_taps; }
+void tap_code(uint8_t code) { assert(code == KC_SPC); ++space_taps; emit(ACTION_KEY(code), true); emit(ACTION_KEY(code), false); }
 uint16_t keymap_key_to_keycode(uint8_t layer, keypos_t key) {
     assert(layer < 16);
     if (key.row >= 8) return encoders[layer][key.col];
@@ -44,17 +65,7 @@ void process_action(keyrecord_t *record, action_t action) {
         code = record->tap.count ? ACTION_KEY(action.key.code) : ACTION_MODS(action.key.mods);
     }
     if (!code || code == ACTION_TRANSPARENT) return;
-    if (record->event.pressed) {
-        assert(held[code] == 0);
-        ++held[code];
-        last_press = code;
-        ++presses_sent;
-    } else {
-        assert(held[code] == 1);
-        --held[code];
-        last_release = code;
-        ++releases_sent;
-    }
+    emit(code, record->event.pressed);
 }
 void layer_state_set(layer_state_t mask) {
     assert(mask == cm_layer_mask(command_mode_state()));
@@ -77,6 +88,11 @@ static void home(void) { key(0, 0); tick(300); assert(layer_state == 0); }
 static void no_held(void) {
     for (unsigned i = 0; i < 65536; ++i) assert(!held[i]);
     assert(presses_sent == releases_sent);
+}
+static void tap_output(unsigned start, uint16_t keycode) {
+    assert(output_count == start + 2);
+    assert(output[start].action == ACTION_KEY(keycode) && output[start].pressed && !output[start].mods);
+    assert(output[start + 1].action == ACTION_KEY(keycode) && !output[start + 1].pressed && !output[start + 1].mods);
 }
 static void put32(uint8_t *p, uint32_t value) { for (uint8_t i = 0; i < 4; ++i) p[i] = value >> (8 * i); }
 static void request(uint8_t *p, uint8_t opcode, uint32_t id, uint32_t session, uint32_t epoch, uint32_t sequence, uint8_t layer) {
@@ -180,12 +196,16 @@ static void qmk_traces(void) {
         maps[layer][7][4] = QK_TRI_LAYER_UPPER;
         maps[layer][1][0] = KC_A; maps[layer][5][0] = KC_LEFT_SHIFT;
         maps[layer][1][1] = QK_MOD_TAP | (1u << 8) | KC_S;
+        maps[layer][5][1] = QK_MOD_TAP | (2u << 8) | KC_F;
         maps[layer][1][2] = QK_MOUSE_BUTTON_1;
         maps[layer][1][6] = KC_Z; maps[layer][5][6] = KC_RIGHT_CTRL;
         for (unsigned encoder = 0; encoder < 4; ++encoder) encoders[layer][encoder] = KC_F1 + encoder;
     }
     maps[1][1][0] = KC_1;
     maps[11][1][0] = KC_B;
+    maps[1][1][1] = KC_7; maps[2][1][1] = KC_NO; maps[15][1][1] = KC_NO;
+    maps[11][1][1] = QK_MOD_TAP | (4u << 8) | KC_D;
+    maps[0][1][3] = KC_F; maps[1][1][3] = KC_4;
     command_mode_housekeeping(); assert(layer_notifications == 0);
     key(3,3); assert(layer_state == 0); tick(199); assert(layer_state == 0); tick(1); assert(layer_state == 2);
     key(7,4); assert(layer_state == 2);
@@ -232,6 +252,50 @@ static void qmk_traces(void) {
     assert(report[8] == CM_DEFERRED && command_mode_state()->selection.layer == 6);
     tick(300); assert(action_tapping_is_idle() && command_mode_state()->selection.layer == 9); no_held();
     edge(1,1,true); tick(250); assert(held[ACTION_MODS(1)] == 1); home(); edge(1,1,false); tick(300); no_held();
+    for (unsigned reverse = 0; reverse < 2; ++reverse) {
+        home(); unsigned start = output_count;
+        edge(1,1,true); edge(7,4,true);
+        if (reverse) { edge(7,4,false); edge(1,1,false); }
+        else { edge(1,1,false); edge(7,4,false); }
+        tap_output(start, KC_S); no_held(); tick(300);
+
+        home(); start = output_count;
+        edge(1,1,true); edge(0,3,true);
+        if (reverse) { edge(0,3,false); edge(1,1,false); }
+        else { edge(1,1,false); edge(0,3,false); }
+        tap_output(start, KC_S); no_held(); tick(300);
+
+        start = output_count; edge(1,1,true); edge(0,0,true);
+        if (reverse) { edge(0,0,false); edge(1,1,false); }
+        else { edge(1,1,false); edge(0,0,false); }
+        tap_output(start, KC_D); no_held(); tick(300);
+
+        home(); start = output_count;
+        edge(1,1,true); edge(0,2,true);
+        if (reverse) { edge(0,2,false); edge(1,1,false); }
+        else { edge(1,1,false); edge(0,2,false); }
+        tap_output(start, KC_S); no_held(); tick(300);
+
+        home(); start = output_count;
+        edge(1,1,true); edge(3,3,true); edge(1,3,true);
+        if (reverse) { edge(1,3,false); edge(1,1,false); }
+        else { edge(1,1,false); edge(1,3,false); }
+        edge(3,3,false); assert(output_count == start + 4);
+        unsigned characters = 0;
+        for (unsigned i = start; i < output_count; ++i) {
+            assert(!output[i].mods);
+            if (output[i].pressed) assert(output[i].action == ACTION_KEY(characters++ ? KC_4 : KC_S));
+        }
+        assert(characters == 2); no_held(); tick(300);
+    }
+    home(); unsigned start = output_count;
+    edge(1,1,true); edge(7,4,true); tick(250); assert(held[ACTION_MODS(1)] == 1);
+    edge(1,1,false); edge(7,4,false); no_held(); assert(output_count == start + 2);
+    assert(output[start].action == ACTION_MODS(1) && output[start].mods == 1 && !output[start + 1].mods); tick(300);
+    home(); edge(0,2,true); start = output_count; edge(1,1,true);
+    key(3,3); edge(3,3,true); edge(3,3,false); edge(1,1,false); edge(0,2,false);
+    tap_output(start, KC_F); no_held(); tick(300);
+    puts("PASS replay source ownership: unresolved home-row taps survive FN, manual, Home, mirror and interrupted Menu in both release orders; holds retain original modifier");
     for (unsigned reason = 0; reason < 3; ++reason) {
         usb_device_state_set_configuration(true, 1);
         uint32_t session = 9000 + reason;
