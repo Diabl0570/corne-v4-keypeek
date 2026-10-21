@@ -7,6 +7,47 @@ on:
 permissions:
   contents: read
 jobs:
+  command-mode:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Registry, exact presets, boot interruption and QMK behavior
+        run: |
+          python3 tools/apply_command_mode_patches.py
+          python3 tools/command_mode_assets.py check
+          python3 tests/command_mode_assets.py
+          python3 tests/storage_bootstrap.py
+          python3 tests/command_mode_test.py
+          python3 tests/keypeek_packet.py
+          clang -std=c11 -Wall -Wextra -Werror -fsanitize=undefined -DCOMMAND_MODE_ENABLE tests/layer_lighting.c -o /tmp/command-lighting
+          /tmp/command-lighting
+  mac-helper:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Build and test native helper
+        run: |
+          swift test --package-path tools/CommandModeHelper
+          swift build -c release --package-path tools/CommandModeHelper
+          tools/CommandModeHelper/.build/release/command-mode-helper dry-run --seconds 2
+          python3 tools/CommandModeHelper/verify_cli.py
+          mkdir -p helper-artifacts
+          cp tools/CommandModeHelper/.build/release/command-mode-helper helper-artifacts/
+          cp tools/CommandModeHelper/README.md helper-artifacts/
+          swift --version > helper-artifacts/compiler.txt
+          uname -m > helper-artifacts/architecture.txt
+          (cd helper-artifacts && shasum -a 256 command-mode-helper > SHA256SUMS)
+          tar -czf command-mode-helper-macos.tar.gz -C helper-artifacts .
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: command-mode-helper-macos
+          path: command-mode-helper-macos.tar.gz
+          if-no-files-found: error
   firmware:
     runs-on: ubuntu-24.04
     strategy:
@@ -53,6 +94,9 @@ jobs:
           fi
           mkdir -p firmware-artifacts
           cp "$QMK_HOME"/.build/*.uf2 firmware-artifacts/
+          if [ "$ROUTE" = vial ] && [ "$REVISION" = rev4_1/standard ]; then
+            python3 tools/verify_command_mode_build.py --elf "$QMK_HOME/.build/tmp_crkbd_rev4_1_standard_vial.elf" --uf2 "$QMK_HOME/.build/tmp_crkbd_rev4_1_standard_vial.uf2" > firmware-artifacts/command-mode.json
+          fi
           (cd firmware-artifacts && sha256sum *.uf2 > SHA256SUMS)
           git submodule status --recursive > firmware-artifacts/submodules.txt
           arm-none-eabi-gcc --version > firmware-artifacts/compiler.txt

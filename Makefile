@@ -55,6 +55,7 @@ vial-qmk-clean:
 
 vial-qmk-init:
 	$(eval KB := ${kb})
+	python3 tools/apply_command_mode_patches.py --source src/vial-kb/vial-qmk
 	rm -rf src/vial-kb/vial-qmk/keyboards/tmp/${KB}
 	mkdir -p src/vial-kb/vial-qmk/keyboards/tmp/${KB}
 	cp -r $(shell pwd)/keyboards/${KB}/qmk/qmk_firmware/* src/vial-kb/vial-qmk/keyboards/tmp/${KB}
