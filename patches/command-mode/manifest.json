@@ -1,6 +1,6 @@
 {
   "source_commit": "dd43959ae5c08d8a28d38a1acf7b04e86b14a344",
-  "patch_sha256": "c7822231dfe16ab32de6c1ab46a9a6bd92e38974623ca2187a82a6a107decaca",
+  "patch_sha256": "8081fb79fc0d763ae444667d7bbb245a367691ec070a1694b56629ef00b2d21a",
   "files": {
     "quantum/keyboard.c": {
       "original": "b5a772541619667003090ba9ea686463457cbadfcc4f9148f17a3a12fbe32257",
@@ -25,6 +25,10 @@
     "quantum/eeconfig.c": {
       "original": "bd58a23aa7250d28314a6dc84286868dd403969b4cb865ffe80c6003675f8d4d",
       "patched": "430c11958e5305a2919881bbde870c08923581d45f06c270bae29e69861f65f0"
+    },
+    "quantum/action_layer.c": {
+      "original": "19d24a8e2a7d64ee28fa9c99b0981083b109718f09cdd96661cad562eb600ae5",
+      "patched": "1e434220f6c87c5f216bcd7dd0956667c3f2174115a8f0a10cfd25c2effee65f"
     }
   }
 }

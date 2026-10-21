@@ -56,6 +56,11 @@ def check_patcher(source):
     assert "Unexpected source content" in refused(source)
     assert (source / "quantum/keyboard.c").read_bytes() == run("git", "-C", str(source), "show", "HEAD:quantum/keyboard.c").stdout.encode()
     (source / "quantum/via.c").write_bytes(original)
+    layer_path = source / "quantum/action_layer.c"
+    layer_original = layer_path.read_bytes()
+    layer_path.write_bytes(layer_original + b"\n")
+    assert "Unexpected source content: quantum/action_layer.c" in refused(source)
+    layer_path.write_bytes(layer_original)
     unexpected = source / "quantum/unreviewed.h"
     unexpected.write_text("unreviewed source\n")
     assert "Unexpected untracked" in refused(source)
@@ -106,6 +111,7 @@ def prepare(source, output, settings):
     fixture_settings = settings
     (output / "command_settings.h").write_bytes(fixture_settings.read_bytes())
     (output / "fixture.c").write_bytes((ROOT / "tests/storage_bootstrap/fixture.c").read_bytes())
+    (output / "layer.inc").write_text(source_piece(source, "quantum/action_layer.c", ["layer_switch_get_layer"]))
     tapping = (source / "quantum/action_tapping.c").read_text()
     (output / "idle.inc").write_text(function(tapping, "action_tapping_is_idle"))
     action = function((source / "quantum/action.c").read_text(), "action_exec")
@@ -125,7 +131,7 @@ def main():
         output = Path(temporary)
         source = output / "pinned"
         run("git", "clone", "--shared", "--no-checkout", "--quiet", str(args.source), str(source))
-        paths = ["quantum/" + name for name in ("keyboard.c", "via.c", "action.c", "action_tapping.c", "action_tapping.h", "eeconfig.c", "qmk_settings.c", "qmk_settings.h", "dynamic_keymap.c", "vial.c", "vial.h", "nvm/eeprom/nvm_dynamic_keymap.c", "nvm/eeprom/nvm_eeprom_eeconfig_internal.h", "nvm/eeprom/nvm_eeprom_via_internal.h", "nvm/eeprom/nvm_eeconfig.c")]
+        paths = ["quantum/" + name for name in ("keyboard.c", "via.c", "action.c", "action_layer.c", "action_tapping.c", "action_tapping.h", "eeconfig.c", "qmk_settings.c", "qmk_settings.h", "dynamic_keymap.c", "vial.c", "vial.h", "nvm/eeprom/nvm_dynamic_keymap.c", "nvm/eeprom/nvm_eeprom_eeconfig_internal.h", "nvm/eeprom/nvm_eeprom_via_internal.h", "nvm/eeprom/nvm_eeconfig.c")]
         run("git", "-C", str(source), "sparse-checkout", "set", "--no-cone", *["/" + p for p in paths])
         run("git", "-C", str(source), "checkout", "--quiet", "--detach", PIN)
         check_patcher(source)

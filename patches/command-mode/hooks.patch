@@ -136,3 +136,17 @@
  }
 
  void eeconfig_init(void) {
+--- a/quantum/action_layer.c
++++ b/quantum/action_layer.c
+@@ -352,6 +352,11 @@
+  * Gets the layer based on key info
+  */
+ uint8_t layer_switch_get_layer(keypos_t key) {
++#ifdef COMMAND_MODE_ENABLE
++    extern bool command_mode_source_layer(keypos_t key, uint8_t *layer);
++    uint8_t owned_layer;
++    if (command_mode_source_layer(key, &owned_layer)) return owned_layer;
++#endif
+ #ifndef NO_ACTION_LAYER
+     action_t action;
+     action.code = ACTION_TRANSPARENT;

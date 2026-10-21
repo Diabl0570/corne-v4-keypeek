@@ -64,6 +64,7 @@
 #define IS_NOEVENT(e) ((e).type == 0)
 
 typedef uint16_t layer_state_t;
+typedef struct { uint8_t col, row; } keypos_t;
 typedef struct { uint8_t type; } keyevent_t;
 typedef struct { keyevent_t event; } keyrecord_t;
 typedef struct { uint16_t unused; } combo_t;
@@ -207,6 +208,52 @@ static unsigned configuration_count;
 void command_mode_configuration_activity(void) { ++configuration_count; }
 #include "admission.inc"
 
+
+#define MAX_LAYER 16
+#define ACTION_TRANSPARENT 0xFFFF
+typedef struct { uint16_t code; } action_t;
+static uint16_t actions[MAX_LAYER][MATRIX_ROWS][MATRIX_COLS];
+static unsigned action_lookups;
+static bool source_owned;
+static uint8_t source_layer;
+static action_t action_for_key(uint8_t layer, keypos_t key) {
+    ++action_lookups;
+    return (action_t){actions[layer][key.row][key.col]};
+}
+bool command_mode_source_layer(keypos_t key, uint8_t *layer) {
+    if (!source_owned || key.row != 0 || key.col != 0) return false;
+    *layer = source_layer;
+    return true;
+}
+#include "layer.inc"
+#undef COMMAND_MODE_ENABLE
+#define layer_switch_get_layer stock_layer_switch_get_layer
+#include "layer.inc"
+#undef layer_switch_get_layer
+#define COMMAND_MODE_ENABLE
+
+static void exercise_source_layer(void) {
+    memset(actions, 0xFF, sizeof(actions));
+    layer_state = (layer_state_t)1 << 7;
+    default_layer_state = 1;
+    actions[7][0][0] = 0x0004;
+    actions[0][0][0] = 0x2004;
+    source_owned = true;
+    source_layer = 0;
+    action_lookups = 0;
+    assert(layer_switch_get_layer((keypos_t){0, 0}) == 0);
+    assert(action_lookups == 0);
+    assert(stock_layer_switch_get_layer((keypos_t){0, 0}) == 7);
+    assert(action_lookups == 1);
+    source_owned = false;
+    assert(layer_switch_get_layer((keypos_t){0, 0}) == 7);
+    actions[7][0][0] = ACTION_TRANSPARENT;
+    assert(layer_switch_get_layer((keypos_t){0, 0}) == 0);
+    actions[0][0][0] = ACTION_TRANSPARENT;
+    assert(layer_switch_get_layer((keypos_t){0, 0}) == 0);
+    puts("Actual source-layer hook preserves press ownership before lookup; unowned and non-command builds retain stock search");
+}
+
 static void reboot(void) {
     driver_ready = false;
     memset(&QS, 0xA5, sizeof(QS));
@@ -270,6 +317,7 @@ static void exercise_power_loss(bool valid_core) {
 int main(void) {
     exercise_power_loss(true);
     exercise_power_loss(false);
+    exercise_source_layer();
     assert(action_tapping_is_idle());
     tapping_key.event.type = 1;
     assert(!action_tapping_is_idle());
