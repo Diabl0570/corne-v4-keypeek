@@ -3,6 +3,10 @@
 
 // An overlay, never an RGB configuration change. Zero saturation means that
 // this layer leaves the selected global effect visible (base/reserved layers).
+#ifdef COMMAND_MODE_ENABLE
+#    include "command_registry.h"
+static const hsv_t layer_indicators[] = CM_LAYER_PALETTE;
+#else
 static const hsv_t layer_indicators[] = {
     [0] = {0, 0, 0},
     [1] = {85, 255, 0},  // green: numbers/navigation
@@ -11,6 +15,7 @@ static const hsv_t layer_indicators[] = {
     [4] = {0, 0, 0},
     [5] = {0, 0, 0},
 };
+#endif
 
 // Driver indices are local to each half. Keep the effect's unmodified buffer:
 // sparse effects (e.g. Raindrops) do not repaint every LED on every frame.

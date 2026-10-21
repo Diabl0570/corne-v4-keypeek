@@ -43,18 +43,20 @@ static void ws2812_set_color(int i, uint8_t r, uint8_t g, uint8_t b) {
 static void ws2812_flush(void) { memcpy(output, leds, sizeof(output)); }
 #include "../keyboards/crkbd/vial-kb/vial-qmk/keymaps/vial/layer_lighting.h"
 
-static void frame(uint8_t hue, bool overlay) {
+static void frame_hsv(uint8_t hue, uint8_t saturation, bool overlay) {
     // Deliberately do NOT repaint: models a sparse effect such as Raindrops.
     rgb_matrix_driver.flush();
     for (unsigned i = 0; i < 46; ++i) {
         bool painted = overlay && i < 23 &&
             (g_led_config.flags[i + (left ? 0 : 23)] & flags);
         assert(output[i].r == (painted ? hue : 7));
-        assert(output[i].g == (painted ? 255 : 7));
+        assert(output[i].g == (painted ? saturation : 7));
         assert(output[i].b == (painted ? MIN(brightness, 50) : 7));
         assert(leds[i].r == 7 && leds[i].g == 7 && leds[i].b == 7);
     }
 }
+
+static void frame(uint8_t hue, bool overlay) { frame_hsv(hue, 255, overlay); }
 
 int main(void) {
     memset(g_led_config.flags, 4, sizeof(g_led_config.flags));
@@ -87,6 +89,21 @@ int main(void) {
     idle = 0; brightness = 17; frame(191, true);
     g_led_config.flags[0] = 0; frame(191, true);
     left = false; g_led_config.flags[25] = 0; frame(191, true);
+#ifdef COMMAND_MODE_ENABLE
+    // Independent expected palette, including less saturated Picker.
+    const uint8_t expected_hues[] = {128, 110, 18, 160, 210, 0, 45, 235, 65, 128};
+    for (unsigned layer = 6; layer < 16; ++layer) {
+        const uint8_t saturation = layer == 15 ? 80 : 255;
+        layer_state = 1u << layer;
+        for (unsigned side = 0; side < 2; ++side) {
+            left = side == 0;
+            frame_hsv(expected_hues[layer - 6], saturation, true);
+            enabled = false; frame(0, false); enabled = true;
+            suspended = true; frame(0, false); suspended = false;
+            idle = 1001; frame(0, false); idle = 0;
+        }
+    }
+#endif
     layer_state = 0; frame(0, false);
     // A sparse effect can continue changing individual LEDs after the overlay.
     rgb_matrix_driver.set_color(2, 9, 10, 11);
