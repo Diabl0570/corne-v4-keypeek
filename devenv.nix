@@ -26,7 +26,6 @@
   '';
 
   scripts.qmk-bootstrap.exec = ''
-    python -m pip install --upgrade pip
     python -m pip install -r "$DEVENV_ROOT/requirements-qmk.txt"
   '';
 }

@@ -2,7 +2,9 @@
 
 This is Kasper's Corne v4 firmware workspace, based on [foostan/kbd_firmware](https://github.com/foostan/kbd_firmware). It retains the upstream history, keyboard definitions, Vial configuration, and existing KeyPeek raw HID integration.
 
-Automatic layer lighting and dependency upgrades are the next task. This baseline does not implement them. No firmware was flashed during publication.
+The Vial standard keymap automatically indicates the highest active/default layer: green for numbers, purple for symbols, and amber for maintenance. Base and reserved layers show the selected global RGB effect. RGB off, brightness and the firmware cap remain effective. No firmware has been flashed by the cloud worker.
+
+[Implementation, dependency audit, validation and rollback](docs/layer-lighting.md) records the exact changes and remaining hardware checks.
 
 ## Build the pinned Vial firmware
 
@@ -48,7 +50,7 @@ The `.vil` files do not contain RGB settings. The observed lighting was Cycle Le
 
 ## Continue development
 
-[The cloud task](docs/cloud-task.md) covers firmware and dependency updates, automatic layer lighting, verification, and a pull request. Preserve the current mappings, timings, KeyPeek, and Vial capabilities.
+[The cloud task](docs/cloud-task.md) preserves the original requirements. Preserve the current mappings, timings, KeyPeek, and Vial capabilities.
 
 ## Provenance and licenses
 
