@@ -1,0 +1,138 @@
+--- a/quantum/keyboard.c
++++ b/quantum/keyboard.c
+@@ -366,6 +366,10 @@
+ #ifdef EEPROM_DRIVER
+     eeprom_driver_init();
+ #endif
++#ifdef COMMAND_MODE_ENABLE
++    extern void command_mode_storage_bootstrap(void);
++    command_mode_storage_bootstrap();
++#endif
+ #ifdef VIAL_ENABLE
+     vial_init();
+ #endif
+--- a/quantum/via.c
++++ b/quantum/via.c
+@@ -84,7 +84,11 @@
+ // Can be called in an overriding via_init_kb() to test if keyboard level code usage of
+ // EEPROM is invalid and use/save defaults.
+ bool via_eeprom_is_valid(void) {
+-#ifdef VIAL_ENABLE
++#ifdef COMMAND_MODE_ENABLE
++    uint8_t magic0 = 0x01;
++    uint8_t magic1 = 0x4D;
++    uint8_t magic2 = 0x43;
++#elif defined(VIAL_ENABLE)
+     uint8_t magic0 = BUILD_ID & 0xFF;
+     uint8_t magic1 = (BUILD_ID >> 8) & 0xFF;
+     uint8_t magic2 = (BUILD_ID >> 16) & 0xFF;
+@@ -101,7 +105,11 @@
+ // Sets VIA/keyboard level usage of EEPROM to valid/invalid
+ // Keyboard level code (eg. via_init_kb()) should not call this
+ void via_eeprom_set_valid(bool valid) {
+-#ifdef VIAL_ENABLE
++#ifdef COMMAND_MODE_ENABLE
++    uint8_t magic0 = 0x01;
++    uint8_t magic1 = 0x4D;
++    uint8_t magic2 = 0x43;
++#elif defined(VIAL_ENABLE)
+     uint8_t magic0 = BUILD_ID & 0xFF;
+     uint8_t magic1 = (BUILD_ID >> 8) & 0xFF;
+     uint8_t magic2 = (BUILD_ID >> 16) & 0xFF;
+@@ -140,6 +148,10 @@
+ }
+
+ void eeconfig_init_via(void) {
++#ifdef COMMAND_MODE_ENABLE
++    extern void command_mode_storage_reset(void);
++    command_mode_storage_reset();
++#else
+     // set the magic number to false, in case this gets interrupted
+     via_eeprom_set_valid(false);
+     // This resets the layout options
+@@ -150,6 +162,7 @@
+     dynamic_keymap_macro_reset();
+     // Save the magic number last, in case saving was interrupted
+     via_eeprom_set_valid(true);
++#endif
+ }
+
+ // This is generalized so the layout options EEPROM usage can be
+@@ -209,6 +222,12 @@
+ // raw_hid_send() is called at the end, with the same buffer, which was
+ // possibly modified with returned values.
+ void raw_hid_receive(uint8_t *data, uint8_t length) {
++#ifdef COMMAND_MODE_ENABLE
++    extern void command_mode_configuration_activity(void);
++    if (length > 0 && data[0] != 0xC0 && data[0] != 0xD3) {
++        command_mode_configuration_activity();
++    }
++#endif
+     uint8_t *command_id   = &(data[0]);
+     uint8_t *command_data = &(data[1]);
+
+--- a/quantum/action.c
++++ b/quantum/action.c
+@@ -77,6 +77,10 @@
+  * FIXME: Needs documentation.
+  */
+ void action_exec(keyevent_t event) {
++#ifdef COMMAND_MODE_ENABLE
++    extern bool command_mode_pre_action(keyevent_t event);
++    if (IS_EVENT(event) && !command_mode_pre_action(event)) return;
++#endif
+     if (IS_EVENT(event)) {
+         ac_dprintf("\n---- action_exec: start -----\n");
+         ac_dprintf("EVENT: ");
+--- a/quantum/action_tapping.c
++++ b/quantum/action_tapping.c
+@@ -114,6 +114,15 @@
+ static keyrecord_t waiting_buffer[WAITING_BUFFER_SIZE] = {};
+ static uint8_t     waiting_buffer_head                 = 0;
+ static uint8_t     waiting_buffer_tail                 = 0;
++
++#ifdef COMMAND_MODE_ENABLE
++bool action_tapping_is_idle(void) {
++#    if defined(CHORDAL_HOLD) || defined(FLOW_TAP_TERM)
++    if (num_registered_taps != 0) return false;
++#    endif
++    return IS_NOEVENT(tapping_key.event) && waiting_buffer_head == waiting_buffer_tail;
++}
++#endif
+
+ static bool process_tapping(keyrecord_t *record);
+ static bool waiting_buffer_enq(keyrecord_t record);
+--- a/quantum/action_tapping.h
++++ b/quantum/action_tapping.h
+@@ -38,6 +38,9 @@
+ uint16_t get_record_keycode(keyrecord_t *record, bool update_layer_cache);
+ uint16_t get_event_keycode(keyevent_t event, bool update_layer_cache);
+ void     action_tapping_process(keyrecord_t record);
++#ifdef COMMAND_MODE_ENABLE
++bool     action_tapping_is_idle(void);
++#endif
+ #endif
+
+ uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record);
+--- a/quantum/eeconfig.c
++++ b/quantum/eeconfig.c
+@@ -70,7 +70,9 @@
+ void eeconfig_init_quantum(void) {
+     nvm_eeconfig_erase();
+
++#ifndef COMMAND_MODE_ENABLE
+     eeconfig_enable();
++#endif
+
+     debug_config_t debug_config = {0};
+     eeconfig_update_debug(&debug_config);
+@@ -167,6 +169,9 @@
+     extern void eeconfig_force_flush_led_matrix(void);
+     eeconfig_force_flush_led_matrix();
+ #endif // LED_MATRIX_ENABLE
++#ifdef COMMAND_MODE_ENABLE
++    eeconfig_enable();
++#endif
+ }
+
+ void eeconfig_init(void) {
