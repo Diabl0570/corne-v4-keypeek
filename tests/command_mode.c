@@ -3,6 +3,7 @@
 #include "command_protocol.h"
 #include "command_registry.h"
 #include "action_tapping.h"
+#include "usb_device_state.h"
 
 _Static_assert(CM_HOME == 0x7E00, "Vial USER00 must resolve to QK_KB_0");
 _Static_assert(CM_SPACE_MIRROR == 0x7E03, "Vial USER03 mismatch");
@@ -224,6 +225,28 @@ static void qmk_traces(void) {
     assert(report[8] == CM_DEFERRED && command_mode_state()->selection.layer == 6);
     tick(300); assert(action_tapping_is_idle() && command_mode_state()->selection.layer == 9); no_held();
     edge(1,1,true); tick(250); assert(held[ACTION_MODS(1)] == 1); home(); edge(1,1,false); tick(300); no_held();
+    for (unsigned reason = 0; reason < 3; ++reason) {
+        usb_device_state_set_configuration(true, 1);
+        uint32_t session = 9000 + reason;
+        request(report, 2, 20, session, 0, 0, 0); command_mode_handle_report(report, 32); key(0,1);
+        request(report, 4, 21, session, command_mode_state()->epoch, 1, 7); command_mode_handle_report(report, 32);
+        usb_device_state_set_leds(1); assert(command_mode_state()->selection.mode == CM_AUTOMATIC);
+        edge(0,2,true); edge(1,0,true); assert(held[ACTION_KEY(KC_LEFT_SHIFT)] == 1);
+        request(report, 4, 22, session, command_mode_state()->epoch, 2, 9); command_mode_handle_report(report, 32); assert(report[8] == CM_DEFERRED);
+        uint32_t epoch = command_mode_state()->epoch;
+        if (reason == 0) usb_device_state_set_suspend(true, 1);
+        else if (reason == 1) usb_device_state_set_configuration(false, 0);
+        else usb_device_state_set_reset();
+        const cm_state_t *s = command_mode_state();
+        assert(s->selection.mode == CM_MANUAL && s->selection.layer == 7 && !s->session && !s->pending && s->epoch != epoch);
+        assert(is_swap_hands_on() && held[ACTION_KEY(KC_LEFT_SHIFT)] == 1);
+        if (reason == 0) usb_device_state_set_resume(true, 1);
+        else usb_device_state_set_configuration(true, 1);
+        request(report, 3, 23, session, 0, 0, 0); command_mode_handle_report(report, 32);
+        assert(report[8] == CM_WRONG_SESSION && command_mode_state()->selection.mode == CM_MANUAL);
+        edge(1,0,false); edge(0,2,false); assert(last_release == ACTION_KEY(KC_LEFT_SHIFT)); no_held(); home();
+    }
+    puts("PASS pinned USB lifecycle: suspend/unconfigure/reset revoke authority with paused clock, late wake STATE fails, mirrored held releases remain paired");
     puts("PASS pinned QMK: interrupted lookup, double/hold/picker, FN, generation-owned controls, full swap/encoder involution, collisions, modifiers/mouse releases, actual tapping-idle deferral");
 }
 

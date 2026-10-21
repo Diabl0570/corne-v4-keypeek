@@ -39,6 +39,7 @@ void cm_interrupt(cm_state_t *state, uint32_t now);
 void cm_control(cm_state_t *state, bool mirror, bool pressed);
 void cm_tick(cm_state_t *state, uint32_t now, bool quiescent);
 void cm_configuration(cm_state_t *state, uint32_t now);
+void cm_session_lost(cm_state_t *state);
 bool cm_configuration_busy(const cm_state_t *state, uint32_t now);
 cm_status_t cm_open(cm_state_t *state, uint32_t session, uint32_t now);
 cm_status_t cm_renew(cm_state_t *state, uint32_t session, uint32_t now);

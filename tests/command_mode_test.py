@@ -43,6 +43,8 @@ def main():
         shutil.copy(ROOT / "tests/command_mode_qmk_shim.h", work)
         for name in ["action_code.h", "modifiers.h", "keycodes.h", "action_tapping.h"]:
             shutil.copy(quantum / name, work / name)
+        for name in ["usb_device_state.c", "usb_device_state.h"]:
+            shutil.copy(args.qmk_source / "tmk_core/protocol" / name, work / name)
         for name in ["action.h", "action_layer.h", "action_util.h", "keycode.h", "quantum_keycodes.h", "timer.h"]:
             (work / name).write_text('#include "command_mode_qmk_shim.h"\n')
         (work / "qmk_tapping.c").write_text('#include "command_mode_qmk_shim.h"\n' + tapping)
@@ -56,7 +58,7 @@ def main():
         for name in ["get_record_keycode", "get_event_keycode", "pre_process_record_quantum", "process_record_quantum"]:
             wrappers += function(quantum_source, name)
         (work / "qmk_wrappers.c").write_text(wrappers)
-        command = ["clang", "-std=gnu11", "-Wall", "-Wextra", "-Werror", "-Wno-unused-parameter", "-Wno-unused-function", "-Wno-missing-field-initializers", "-fsanitize=undefined", "-fno-sanitize-recover=all", "-g", "-I", str(work), "-I", str(KEYMAP), '-DQMK_KEYBOARD_H="command_mode_qmk_shim.h"', "-include", str(work / "command_mode_qmk_shim.h"), str(work / "qmk_wrappers.c"), str(work / "qmk_tapping.c"), str(KEYMAP / "command_state.c"), str(KEYMAP / "command_protocol.c"), str(KEYMAP / "command_qmk.c"), str(ROOT / "tests/command_mode.c"), "-o", str(work / "test")]
+        command = ["clang", "-std=gnu11", "-Wall", "-Wextra", "-Werror", "-Wno-unused-parameter", "-Wno-unused-function", "-Wno-missing-field-initializers", "-fsanitize=undefined", "-fno-sanitize-recover=all", "-g", "-I", str(work), "-I", str(KEYMAP), '-DQMK_KEYBOARD_H="command_mode_qmk_shim.h"', "-include", str(work / "command_mode_qmk_shim.h"), str(work / "qmk_wrappers.c"), str(work / "qmk_tapping.c"), str(work / "usb_device_state.c"), str(KEYMAP / "command_state.c"), str(KEYMAP / "command_protocol.c"), str(KEYMAP / "command_qmk.c"), str(ROOT / "tests/command_mode.c"), "-o", str(work / "test")]
         subprocess.run(command, check=True)
         subprocess.run([str(work / "test")], check=True)
         print("QMK source pin verified: " + pin, flush=True)

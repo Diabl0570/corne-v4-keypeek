@@ -161,6 +161,12 @@ void cm_configuration(cm_state_t *s, uint32_t now) {
     boundary(s);
 }
 
+void cm_session_lost(cm_state_t *s) {
+    s->session = 0;
+    disarm(s);
+    boundary(s);
+}
+
 bool cm_configuration_busy(const cm_state_t *s, uint32_t now) {
     return s->configuration_seen && (uint32_t)(now - s->configuration_at) < CM_LEASE_MS;
 }

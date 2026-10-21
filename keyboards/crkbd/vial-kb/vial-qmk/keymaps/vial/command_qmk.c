@@ -1,6 +1,7 @@
 #include "command_qmk.h"
 #include "command_protocol.h"
 #include "action_tapping.h"
+#include "usb_device_state.h"
 
 enum { CM_PHYSICAL_KEYS = MATRIX_ROWS * MATRIX_COLS, CM_INPUTS = CM_PHYSICAL_KEYS + NUM_ENCODERS * 2 };
 enum { CM_LOGICAL_KEYS = CM_PHYSICAL_KEYS + NUM_ENCODERS };
@@ -18,6 +19,7 @@ static cm_press_t presses[CM_INPUTS];
 static uint8_t logical_owner[CM_LOGICAL_KEYS];
 static uint32_t applied_revision;
 static bool initialized;
+static usb_configure_state_t usb_state = USB_DEVICE_STATE_NO_INIT;
 
 const keypos_t PROGMEM hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
     {{0,4}, {1,4}, {2,4}, {3,4}, {4,4}, {5,4}, {6,4}},
@@ -169,6 +171,15 @@ bool command_mode_handle_report(uint8_t *data, uint8_t length) {
 void command_mode_configuration_activity(void) {
     initialize();
     cm_configuration(&state, timer_read32());
+    apply();
+}
+
+void notify_usb_device_state_change_user(struct usb_device_state device) {
+    if (usb_state == device.configure_state) return;
+    usb_state = device.configure_state;
+    if (usb_state == USB_DEVICE_STATE_CONFIGURED) return;
+    initialize();
+    cm_session_lost(&state);
     apply();
 }
 
