@@ -1,0 +1,117 @@
+{
+  "observed_date": "2026-10-21",
+  "device": {
+    "manufacturer": "foostan",
+    "product": "Corne v4",
+    "usb_vid": "0x4653",
+    "usb_pid": "0x0004",
+    "usb_bcd_device": "0x0410",
+    "vial_uid": 5010774632021243529,
+    "vial_protocol": 6,
+    "via_protocol": 9,
+    "physical_revision": "Unconfirmed. USB metadata alone does not distinguish rev4_0 from rev4_1."
+  },
+  "vial_app": {
+    "short_version": "0.7.5",
+    "bundle_version": "0.7.5"
+  },
+  "backup": {
+    "filename": "layouts/corne-v4-before-2026-10-21.vil",
+    "bytes": 14426,
+    "sha256": "eab35d0b53d2e56af2ca69d275762c0980122363a9fd53e82b733d795866c68b",
+    "contains": [
+      "keymap",
+      "encoder keymaps",
+      "macros",
+      "tap dance",
+      "combos",
+      "key overrides",
+      "alt repeat key",
+      "QMK settings"
+    ],
+    "does_not_contain": [
+      "RGB effect",
+      "RGB colour",
+      "RGB brightness",
+      "RGB speed"
+    ]
+  },
+  "lighting_baseline": {
+    "effect": "Cycle Left Right",
+    "color_rgb_hex": "#FF0000",
+    "color_panel_rgba": [
+      1,
+      0,
+      0,
+      1
+    ],
+    "brightness_ui_value": 50,
+    "speed_ui_value": 127,
+    "brightness_range": "Not exposed by accessibility. Slider handle was visually at its maximum.",
+    "available_controls": [
+      "RGB Effect",
+      "RGB Color",
+      "RGB Brightness",
+      "RGB Speed",
+      "Save"
+    ],
+    "per_layer_rules_visible": false
+  },
+  "layers": [
+    {
+      "layer": 0,
+      "role": "QWERTY with home row modifier taps",
+      "activation_keys": [
+        "TG(1) on left thumb",
+        "FN_MO23 on right thumb"
+      ],
+      "preserve": "All existing keycodes and tap/hold settings."
+    },
+    {
+      "layer": 1,
+      "role": "Numbers and navigation",
+      "details": "Top row digits. H/J/K/L positions carry left/down/up/right. Left thumb has TG(1)."
+    },
+    {
+      "layer": 2,
+      "role": "Symbols",
+      "details": "Shifted digits and punctuation/brackets on right."
+    },
+    {
+      "layer": 3,
+      "role": "Keyboard lighting and maintenance",
+      "details": "RGB controls and QK_BOOT at top left. No function row observed."
+    },
+    {
+      "layer": 4,
+      "role": "Fully transparent",
+      "activation_observed": false
+    },
+    {
+      "layer": 5,
+      "role": "Fully transparent",
+      "activation_observed": false
+    }
+  ],
+  "local_source": {
+    "remote": "https://github.com/foostan/kbd_firmware.git",
+    "branch": "main",
+    "head": "65ea692c",
+    "status": "Ahead 6 commits with pre-existing staged, unstaged and untracked files. Read-only discovery only.",
+    "keymap": "keyboards/crkbd/vial-kb/vial-qmk/keymaps/vial/keymap.c",
+    "preserve": "Existing KeyPeek raw HID integration and all local changes."
+  },
+  "changes_made": [],
+  "verification": {
+    "backup_json_parsed": true,
+    "backup_layers": 6,
+    "baseline_lighting_ui_observed": true,
+    "physical_led_behavior_tested": false,
+    "layer_lighting_implemented": false
+  },
+  "restore_layout": "In Vial, choose File > Load saved layout and select the .vil backup. Lighting is separate and must be restored from lighting_baseline if changed later.",
+  "principles_applied": {
+    "sequence_work_into_verifiable_units": "Export and parse the baseline before any setting change.",
+    "prove_it_works": "Record actual UI values. Do not claim LED behavior without a physical check."
+  }
+}

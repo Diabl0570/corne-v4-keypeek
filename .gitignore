@@ -8,3 +8,9 @@
 
 # idea
 .idea/*
+
+# Generated firmware and local inspection output
+**/.build/
+tmp_*.uf2
+tmp_*.hex
+keyboard_info.json
