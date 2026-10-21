@@ -6,6 +6,8 @@ The Vial standard keymap automatically indicates the highest active/default laye
 
 [Implementation, dependency audit, validation and rollback](docs/layer-lighting.md) records the exact changes and remaining hardware checks.
 
+[Command mode](docs/command-mode.md) adds sixteen layers, Menu picker/Home, momentary hand swapping and an app-context Mac helper for **rev4_1/standard Vial**. The fresh live backup is committed separately before feature work. Review the [physical key legend](presets/command-mode/legend.html), exact baseline/experimental presets and future upgrade/import procedure before flashing.
+
 ## Build the pinned Vial firmware
 
 Clone the repository and its pinned dependencies:
@@ -24,7 +26,7 @@ make kb=crkbd vial-qmk-init
 make kb=crkbd kr=rev4_1/standard km=vial vial-qmk-compile
 ```
 
-The `rev4_1/standard` command is a build target, not a confirmed identification of the connected PCB. The physical revision remains unresolved. Use `kr=rev4_0/standard` to compile the other standard variant. Do not flash either artifact until the PCB revision is established.
+The user's board has been confirmed as Corne v4.1 standard. Command Mode is enabled only for that Vial target. `kr=rev4_0/standard` builds the unchanged six-layer standard variant. The command-mode storage format requires the explicit future preset import described in its guide.
 
 The Vial artifact is `src/vial-kb/vial-qmk/.build/tmp_crkbd_rev4_1_standard_vial.uf2`. The Makefile also copies it into `keyboards/crkbd/vial-kb/vial-qmk/.build/`. Generated firmware is ignored by Git.
 
@@ -44,7 +46,7 @@ Use `git submodule update --init --recursive` to restore the pinned dependencies
 
 ## Preserve the device layout
 
-[The current Vial export](layouts/corne-v4-before-2026-10-21.vil) contains six layers and the current tap/hold settings. The older `corne v4.vil` remains as a historical backup. The C keymap contains firmware defaults and must not replace the current device layout without an explicit migration plan.
+[The fresh live Vial export](backups/2026-10-21-live/corne-v4.1-live-2026-10-21-1631.vil) contains six layers and the captured tap/hold settings. The earlier export in `layouts/` and `corne v4.vil` remain historical backups. The command-mode compiled seed and sixteen-layer presets are generated from the fresh export; the other targets retain their existing defaults.
 
 The `.vil` files do not contain RGB settings. The observed lighting was Cycle Left Right, red `#FF0000`, brightness 50, and speed 127. [Baseline metadata](docs/baseline-2026-10-21.json) records the observations and limitations.
 

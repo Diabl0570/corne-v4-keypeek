@@ -12,7 +12,7 @@ The left outer thumb is Menu in every layer, including while mirrored.
 - Hold Menu for 200ms to show Picker. Release without selecting to cancel. Choose a key while held to select its panel.
 - Double-tap Menu to perform Home immediately on the second press. Home returns to typing, clears mirror and held layer overlays, cancels Picker, and disarms Auto.
 - In Picker, left V selects Auto Command and left B performs Home. Esc selects Typing, Q Numbers, W Symbols, E Maintenance, A OpenAI desktop, S Claude, D Browser, F Editor, G Mouse, left Shift Review, Z Experiments, X Spare and C Picker. The generated legend lists every slot, including reserved layers4/5.
-- The inner thumbs hold Mirror in command panels and Picker. Baseline typing Space remains Space. `experimental16` alone changes typing Space to tap Space / hold Mirror.
+- The inner thumbs hold Mirror in command panels and Picker. Baseline typing Space remains Space. `experimental16` alone changes typing Space to tap Space / hold Mirror. Home cancels an experimental Space that is still held or queued, so it cannot emit a late Space after returning to typing.
 
 [Open the physical key diagram](../presets/command-mode/legend.html) or [read the keycap legend](../presets/command-mode/legend.md). Both halves have duplicated command, mouse, scroll, button and speed clusters. The right middle thumb retains symbols; Numbers plus that thumb retains Maintenance.
 
