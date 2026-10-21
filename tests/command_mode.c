@@ -168,6 +168,7 @@ static void qmk_traces(void) {
         maps[layer][0][0] = CM_HOME; maps[layer][0][1] = CM_AUTO;
         maps[layer][0][2] = CM_MIRROR; maps[layer][4][2] = CM_MIRROR;
         maps[layer][0][3] = CM_SELECT_0 + 11; maps[layer][0][4] = CM_SPACE_MIRROR;
+        maps[layer][0][5] = CM_SELECT_0 + 1;
         maps[layer][7][4] = QK_TRI_LAYER_UPPER;
         maps[layer][1][0] = KC_A; maps[layer][5][0] = KC_LEFT_SHIFT;
         maps[layer][1][1] = QK_MOD_TAP | (1u << 8) | KC_S;
@@ -187,6 +188,11 @@ static void qmk_traces(void) {
     edge(3,3,true); tick(200); assert(layer_state == 0x8000); edge(3,3,false); assert(layer_state == 0);
     edge(3,3,true); tick(200); key(0,3); assert(layer_state == (1u << 11)); edge(3,3,false); assert(layer_state == (1u << 11));
     edge(7,4,true); assert(layer_state == (1u << 2)); edge(7,4,false); assert(layer_state == (1u << 11)); home();
+    edge(3,3,true); tick(200); key(0,5); edge(3,3,false);
+    assert(layer_state == (1u << 1) && command_mode_state()->selection.mode == CM_TYPING);
+    edge(7,4,true); assert(layer_state == ((1u << 1) | (1u << 2) | (1u << 3)));
+    edge(7,4,false); assert(layer_state == (1u << 1));
+    key(3,3); tick(200); assert(layer_state == 0 && command_mode_state()->selection.mode == CM_TYPING);
     key(0,4); assert(space_taps == 1 && !is_swap_hands_on());
     edge(0,4,true); clock_ms += 200; edge(0,4,false); assert(space_taps == 1 && !is_swap_hands_on());
     edge(0,4,true); tick(200); assert(is_swap_hands_on()); key(3,3); edge(3,3,true); assert(!is_swap_hands_on()); edge(3,3,false); edge(0,4,false); assert(space_taps == 1);

@@ -62,7 +62,7 @@ void cm_select(cm_state_t *s, uint8_t layer) {
         cm_home(s);
         return;
     }
-    s->selection = (cm_selection_t){CM_MANUAL, layer, false};
+    s->selection = layer == 1 ? (cm_selection_t){CM_TYPING, 0, true} : (cm_selection_t){CM_MANUAL, layer, false};
     s->picker = false;
     s->menu = CM_MENU_CONSUMED;
     boundary(s);
