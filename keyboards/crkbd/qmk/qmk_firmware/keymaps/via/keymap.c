@@ -1,5 +1,29 @@
 #include QMK_KEYBOARD_H
 
+// QMK 0.34 removed the shared RGB_* aliases. Keep this keymap usable for
+// both rev1 underglow and rev4 RGB Matrix without changing key positions.
+#ifdef RGB_MATRIX_ENABLE
+#    define RGB_TOG RM_TOGG
+#    define RGB_MOD RM_NEXT
+#    define RGB_RMOD RM_PREV
+#    define RGB_HUI RM_HUEU
+#    define RGB_HUD RM_HUED
+#    define RGB_SAI RM_SATU
+#    define RGB_SAD RM_SATD
+#    define RGB_VAI RM_VALU
+#    define RGB_VAD RM_VALD
+#else
+#    define RGB_TOG UG_TOGG
+#    define RGB_MOD UG_NEXT
+#    define RGB_RMOD UG_PREV
+#    define RGB_HUI UG_HUEU
+#    define RGB_HUD UG_HUED
+#    define RGB_SAI UG_SATU
+#    define RGB_SAD UG_SATD
+#    define RGB_VAI UG_VALU
+#    define RGB_VAD UG_VALD
+#endif
+
 
 #ifdef LAYOUT_split_3x6_3_ex2
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
