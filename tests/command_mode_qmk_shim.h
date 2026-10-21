@@ -55,6 +55,12 @@ uint16_t timer_read(void);
 void clear_weak_mods(void);
 void clear_keyboard(void);
 void tap_code(uint8_t code);
+void tap_code_delay(uint8_t code, uint16_t delay);
+void register_code(uint8_t code);
+void unregister_code(uint8_t code);
+void wait_ms(uint16_t delay);
+#define QS_tap_hold_caps_delay 80
+#define QS_tap_code_delay 0
 void action_exec(keyevent_t event);
 void process_hand_swap(keyevent_t *event);
 void swap_hands_on(void);
@@ -62,6 +68,7 @@ void swap_hands_off(void);
 bool is_swap_hands_on(void);
 bool pre_process_record_quantum(keyrecord_t *record);
 bool process_record_quantum(keyrecord_t *record);
+bool process_record_user(uint16_t keycode, keyrecord_t *record);
 bool process_record_quantum_helper(uint16_t keycode, keyrecord_t *record);
 bool pre_process_record_modules(uint16_t keycode, keyrecord_t *record);
 bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record);

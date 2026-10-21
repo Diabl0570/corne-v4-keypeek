@@ -13,7 +13,7 @@ _Static_assert(CM_SELECT_LAST == 0x7E13, "Vial USER19 mismatch");
 layer_state_t layer_state, default_layer_state = 1;
 static uint32_t clock_ms;
 static uint16_t maps[16][8][7], encoders[16][4];
-static unsigned held[65536], presses_sent, releases_sent, space_taps, layer_notifications;
+static unsigned held[65536], presses_sent, releases_sent, layer_notifications;
 static uint16_t last_press, last_release;
 static struct { uint16_t action; bool pressed; uint8_t mods; } output[4096];
 static unsigned output_count;
@@ -45,8 +45,10 @@ void process_record_tap_hint(keyrecord_t *record) { (void)record; }
 void post_process_record_quantum(keyrecord_t *record) { (void)record; }
 bool pre_process_record_modules(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; return true; }
 bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; return true; }
-bool process_record_quantum_helper(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; return true; }
-void tap_code(uint8_t code) { assert(code == KC_SPC); ++space_taps; emit(ACTION_KEY(code), true); emit(ACTION_KEY(code), false); }
+bool process_record_quantum_helper(uint16_t keycode, keyrecord_t *record) { return process_record_user(keycode, record); }
+void register_code(uint8_t code) { emit(ACTION_KEY(code), true); }
+void unregister_code(uint8_t code) { emit(ACTION_KEY(code), false); }
+void wait_ms(uint16_t delay) { clock_ms += delay; }
 uint16_t keymap_key_to_keycode(uint8_t layer, keypos_t key) {
     assert(layer < 16);
     if (key.row >= 8) return encoders[layer][key.col];
@@ -221,9 +223,12 @@ static void qmk_traces(void) {
     edge(7,4,true); assert(layer_state == ((1u << 1) | (1u << 2) | (1u << 3)));
     edge(7,4,false); assert(layer_state == (1u << 1));
     key(3,3); tick(200); assert(layer_state == 0 && command_mode_state()->selection.mode == CM_TYPING);
-    key(0,4); assert(space_taps == 1 && !is_swap_hands_on());
-    edge(0,4,true); clock_ms += 200; edge(0,4,false); assert(space_taps == 1 && !is_swap_hands_on());
-    edge(0,4,true); tick(200); assert(is_swap_hands_on()); key(3,3); edge(3,3,true); assert(!is_swap_hands_on()); edge(3,3,false); edge(0,4,false); assert(space_taps == 1);
+    unsigned space_start = output_count;
+    key(0,4); tap_output(space_start, KC_SPC); assert(!is_swap_hands_on());
+    space_start = output_count;
+    edge(0,4,true); clock_ms += 200; edge(0,4,false); assert(output_count == space_start && !is_swap_hands_on());
+    edge(0,4,true); tick(200); assert(is_swap_hands_on()); key(3,3); edge(3,3,true); assert(!is_swap_hands_on()); edge(3,3,false);
+    tick(250); assert(!is_swap_hands_on()); edge(0,4,false); assert(output_count == space_start);
     tick(300);
     edge(0,2,true); assert(is_swap_hands_on()); edge(1,0,true); assert(last_press == ACTION_KEY(KC_LEFT_SHIFT));
     key(3,3); edge(3,3,true); assert(!is_swap_hands_on()); edge(3,3,false);
@@ -295,6 +300,78 @@ static void qmk_traces(void) {
     home(); edge(0,2,true); start = output_count; edge(1,1,true);
     key(3,3); edge(3,3,true); edge(3,3,false); edge(1,1,false); edge(0,2,false);
     tap_output(start, KC_F); no_held(); tick(300);
+    for (unsigned reverse = 0; reverse < 2; ++reverse) {
+        home(); start = output_count;
+        edge(1,1,true); edge(0,4,true);
+        if (reverse) { edge(0,4,false); edge(1,1,false); }
+        else { edge(1,1,false); edge(0,4,false); }
+        assert(output_count == start + 4);
+        unsigned characters = 0;
+        for (unsigned i = start; i < output_count; ++i) {
+            assert(!output[i].mods);
+            if (output[i].pressed) assert(output[i].action == ACTION_KEY(characters++ ? KC_SPC : KC_S));
+        }
+        assert(characters == 2); no_held(); tick(300);
+    }
+    home(); start = output_count;
+    edge(1,1,true); tick(180); key(0,4); assert(output_count == start);
+    tick(25); assert(held[ACTION_MODS(1)] == 1);
+    assert(output_count == start + 3);
+    assert(output[start].action == ACTION_MODS(1) && output[start].pressed);
+    assert(output[start + 1].action == ACTION_KEY(KC_SPC) && output[start + 1].pressed);
+    assert(output[start + 2].action == ACTION_KEY(KC_SPC) && !output[start + 2].pressed);
+    for (unsigned i = start; i < output_count; ++i) assert(output[i].mods == 1);
+    edge(1,1,false); no_held(); tick(300);
+
+    home(); start = output_count;
+    edge(1,1,true); key(0,4); key(0,4); edge(1,1,false);
+    assert(output_count == start + 6);
+    unsigned characters = 0;
+    for (unsigned i = start; i < output_count; ++i) {
+        assert(!output[i].mods);
+        if (output[i].pressed) assert(output[i].action == ACTION_KEY(characters++ ? KC_SPC : KC_S));
+    }
+    assert(characters == 3); no_held(); tick(300);
+
+    home(); start = output_count;
+    edge(0,4,true); edge(1,1,true); assert(is_swap_hands_on());
+    edge(0,4,false); assert(!is_swap_hands_on()); edge(1,1,false);
+    tap_output(start, KC_F); no_held(); tick(300);
+
+    home(); start = output_count;
+    edge(1,1,true); key(0,4); key(0,0); edge(1,1,false);
+    tap_output(start, KC_S); no_held(); tick(300);
+
+    home(); start = output_count;
+    edge(0,4,true); key(3,3); edge(3,3,true); edge(3,3,false);
+    assert(!is_swap_hands_on()); tick(250); assert(!is_swap_hands_on());
+    edge(0,4,false); assert(output_count == start); no_held(); tick(300);
+
+    home(); start = output_count;
+    maps[11][0][4] = KC_NO;
+    edge(1,1,true); key(0,4); key(0,3); edge(1,1,false);
+    assert(output_count == start + 4);
+    assert(output[start].action == ACTION_KEY(KC_S) && output[start].pressed);
+    assert(output[start + 1].action == ACTION_KEY(KC_SPC) && output[start + 1].pressed);
+    for (unsigned i = start; i < output_count; ++i) assert(!output[i].mods);
+    no_held(); tick(300); home();
+    home(); start = output_count;
+    edge(1,1,true); edge(0,2,true); edge(4,4,true);
+    edge(0,2,false); edge(4,4,false); edge(1,1,false);
+    assert(output_count == start + 4);
+    assert(output[start].action == ACTION_KEY(KC_S) && output[start].pressed);
+    assert(output[start + 1].action == ACTION_KEY(KC_SPC) && output[start + 1].pressed);
+    for (unsigned i = start; i < output_count; ++i) assert(!output[i].mods);
+    no_held(); tick(300);
+
+    home(); start = output_count;
+    edge(1,1,true); key(0,4); key(0,0); key(0,4); edge(1,1,false);
+    assert(output_count == start + 4);
+    assert(output[start].action == ACTION_KEY(KC_S) && output[start].pressed);
+    assert(output[start + 1].action == ACTION_KEY(KC_SPC) && output[start + 1].pressed);
+    for (unsigned i = start; i < output_count; ++i) assert(!output[i].mods);
+    no_held(); tick(300);
+    puts("PASS queued Space: S then Space in both release orders, pending Ctrl hold reports, repeated taps, interrupted Mirror, held/queued Home cancellation and source-layer change");
     puts("PASS replay source ownership: unresolved home-row taps survive FN, manual, Home, mirror and interrupted Menu in both release orders; holds retain original modifier");
     for (unsigned reason = 0; reason < 3; ++reason) {
         usb_device_state_set_configuration(true, 1);

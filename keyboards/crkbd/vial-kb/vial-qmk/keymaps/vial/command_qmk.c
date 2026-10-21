@@ -13,6 +13,14 @@ typedef struct {
     bool space_held;
 } cm_press_t;
 
+typedef struct {
+    uint32_t generation;
+    uint16_t time;
+    uint8_t logical;
+    bool pending, tap;
+} cm_space_release_t;
+
+static cm_space_release_t space_releases[WAITING_BUFFER_SIZE];
 static cm_state_t state;
 static cm_protocol_t protocol;
 static cm_press_t presses[CM_INPUTS];
@@ -88,11 +96,27 @@ bool command_mode_source_layer(keypos_t key, uint8_t *layer) {
 
 static void expire_owners(void) {
     if (!action_tapping_is_idle()) return;
+    for (uint8_t i = 0; i < WAITING_BUFFER_SIZE; ++i) space_releases[i].pending = false;
     for (uint8_t i = 0; i < CM_LOGICAL_KEYS; ++i) {
         if (!logical_owner[i]) continue;
         const cm_press_t *press = &presses[logical_owner[i] - 1];
-        if (press->role != CM_ORDINARY || press->logical != i) logical_owner[i] = 0;
+        if ((press->role != CM_ORDINARY && press->role != CM_SPACE_KEY) || press->logical != i) logical_owner[i] = 0;
     }
+}
+
+bool command_mode_process_record(uint16_t keycode, keyrecord_t *record) {
+    if (keycode != CM_SPACE_MIRROR) return true;
+    if (!record->event.pressed) {
+        uint8_t slot = logical_id(record->event.key);
+        for (uint8_t i = 0; i < WAITING_BUFFER_SIZE; ++i) {
+            cm_space_release_t *release = &space_releases[i];
+            if (!release->pending || release->logical != slot || release->time != record->event.time) continue;
+            release->pending = false;
+            if (release->tap && release->generation == state.home_generation) tap_code(KC_SPC);
+            break;
+        }
+    }
+    return false;
 }
 
 static void hold_spaces(uint32_t now, bool interrupted) {
@@ -120,13 +144,21 @@ bool command_mode_pre_action(keyevent_t event) {
         if (role == CM_MENU_KEY) cm_menu(&state, false, now);
         else if (current && role == CM_FN_KEY) cm_control(&state, false, false);
         else if (current && role == CM_MIRROR_KEY) cm_control(&state, true, false);
-        else if (current && role == CM_SPACE_KEY) {
-            if (press->space_held) cm_control(&state, true, false);
-            else tap_code(KC_SPC);
+        else if (role == CM_SPACE_KEY) {
+            if (current && press->space_held) cm_control(&state, true, false);
+            // QMK may still be waiting for an earlier mod-tap when this physical release arrives.
+            for (uint8_t i = 0; i < WAITING_BUFFER_SIZE; ++i) {
+                if (space_releases[i].pending) continue;
+                space_releases[i] = (cm_space_release_t){
+                    .generation = press->generation, .time = event.time, .logical = press->logical,
+                    .pending = true, .tap = !press->space_held,
+                };
+                break;
+            }
         }
         *press = (cm_press_t){0};
         apply();
-        return role == CM_ORDINARY;
+        return role == CM_ORDINARY || role == CM_SPACE_KEY;
     }
     if (press->role != CM_FREE) return false;
     hold_spaces(now, true);
@@ -155,14 +187,14 @@ bool command_mode_pre_action(keyevent_t event) {
     else if (keycode == QK_TRI_LAYER_UPPER) {
         press->role = CM_FN_KEY;
         cm_control(&state, false, true);
-    } else {
+    } else press->role = CM_ORDINARY;
+    if (press->role == CM_ORDINARY || press->role == CM_SPACE_KEY) {
         press->logical = slot;
         logical_layer[slot] = layer;
         logical_owner[slot] = physical + 1;
-        press->role = CM_ORDINARY;
     }
     apply();
-    return press->role == CM_ORDINARY;
+    return press->role == CM_ORDINARY || press->role == CM_SPACE_KEY;
 }
 
 void command_mode_housekeeping(void) {

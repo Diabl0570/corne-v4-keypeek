@@ -21,6 +21,10 @@ void raw_hid_receive_kb(uint8_t *data, uint8_t length) {
 }
 
 #ifdef COMMAND_MODE_ENABLE
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    return command_mode_process_record(keycode, record);
+}
+
 void housekeeping_task_user(void) {
     command_mode_housekeeping();
 }
