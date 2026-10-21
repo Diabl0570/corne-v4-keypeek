@@ -8,7 +8,7 @@ Root owns `config/command-mode.json`, `tools/command_mode_assets.py`, generated 
 
 IDs: 0 Typing, 1 Numbers, 2 Symbols, 3 Maintenance, 4 Reserved 4, 5 Reserved 5, 6 Generic, 7 OpenAI desktop, 8 Claude, 9 Browser, 10 Editor, 11 Mouse, 12 Review, 13 Experiments, 14 Spare, 15 Picker. Auto Command is a selector action, not a layer. Only IDs6..10 are valid host contexts. Root-generated `command_registry.h` supplies `CM_LAYER_COUNT=16`, `CM_GENERIC_LAYER=6`, `CM_PICKER_LAYER=15`, `CM_REGISTRY_HASH` uint32, `cm_auto_layer_valid(uint8_t)`, palette/table names. Generated Swift `CommandRegistry` supplies the same IDs/hash, bundle lookup and transient/configurator IDs. All first six saved matrices/encoders and all non-layout fields are exact in baseline16.
 
-Custom keycode values: `CM_HOME=QK_USER_0` (0x7E40), `CM_AUTO=QK_USER_1`, `CM_MIRROR=QK_USER_2` hold only, `CM_SPACE_MIRROR=QK_USER_3` experimental tap Space/hold mirror. `CM_SELECT_0` starts at QK_USER_4 (0x7E44), followed by all16 IDs. Generated preset uses USER00..USER19 names; generated C maps to QK_USER_0 etc. Mirror is present on left and right command/picker controls. Menu is physical[3,3], paired[7,3] stays fixed in full swap involution.
+Custom keycode values: `CM_HOME=QK_KB_0` (0x7E00), `CM_AUTO=QK_KB_1`, `CM_MIRROR=QK_KB_2` hold only, `CM_SPACE_MIRROR=QK_KB_3` experimental tap Space/hold mirror. `CM_SELECT_0` starts at QK_USER_4 (0x7E44), followed by all16 IDs. Generated preset uses USER00..USER19 names; generated C maps to QK_KB_0 etc. Mirror is present on left and right command/picker controls. Menu is physical[3,3], paired[7,3] stays fixed in full swap involution.
 
 ## Firmware behavior
 
