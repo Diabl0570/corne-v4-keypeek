@@ -2,6 +2,7 @@
 import copy
 import importlib.util
 import json
+import re
 import tempfile
 import unittest
 from pathlib import Path
@@ -75,6 +76,13 @@ class AssetTests(unittest.TestCase):
         # Vial GUI v6 USER00 is QK_KB+0, independently verified upstream.
         self.assertEqual(assets.c_code('USER00'), 'QK_KB_0')
         self.assertEqual(assets.c_code('USER19'), 'QK_KB_19')
+        # Match imported USERnn to actual pinned QMK enum values, not just names.
+        keycodes = (ROOT/'src/vial-kb/vial-qmk/quantum/keycodes.h').read_text()
+        for number in range(20):
+            compiled_name = assets.c_code(f'USER{number:02}')
+            match = re.search(r'\b'+compiled_name+r'\s*=\s*(0x[0-9A-Fa-f]+)', keycodes)
+            self.assertIsNotNone(match)
+            self.assertEqual(int(match.group(1), 16), 0x7E00+number)
         matching = [x for x in self.registry['layers'] if 'com.openai.codex' in x.get('bundle_ids',[])]
         self.assertEqual([x['id'] for x in matching], [7])
 
