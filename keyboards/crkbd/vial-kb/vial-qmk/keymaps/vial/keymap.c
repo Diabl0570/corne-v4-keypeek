@@ -1,4 +1,7 @@
 #include QMK_KEYBOARD_H
+#include "rgb_matrix_drivers.h"
+#include "ws2812.h"
+#include "layer_lighting.h"
 
 // KeyPeek raw HID handler. The module's own handler needs raw_hid_receive_user,
 // which vial-qmk does not have, so we chain the module in here instead.
