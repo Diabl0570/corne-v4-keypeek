@@ -2,6 +2,11 @@
 #include "rgb_matrix_drivers.h"
 #include "ws2812.h"
 #include "layer_lighting.h"
+#ifdef COMMAND_MODE_ENABLE
+#    include "command_qmk.h"
+#    include "vial_ensure_keycode.h"
+#    include "command_keymaps.h"
+#endif
 
 // KeyPeek raw HID handler. The module's own handler needs raw_hid_receive_user,
 // which vial-qmk does not have, so we chain the module in here instead.
@@ -9,9 +14,17 @@
 bool keypeek_handle_command(uint8_t *data, uint8_t length);
 
 void raw_hid_receive_kb(uint8_t *data, uint8_t length) {
+#ifdef COMMAND_MODE_ENABLE
+    if (command_mode_handle_report(data, length)) return;
+#endif
     keypeek_handle_command(data, length);
 }
 
+#ifdef COMMAND_MODE_ENABLE
+void housekeeping_task_user(void) {
+    command_mode_housekeeping();
+}
+#else
 #ifdef LAYOUT_split_3x6_3_ex2
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [0] = LAYOUT_split_3x6_3_ex2(
@@ -123,4 +136,5 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
   [2] = { ENCODER_CCW_CW(RGB_MOD, RGB_RMOD), ENCODER_CCW_CW(RGB_HUI, RGB_HUD), ENCODER_CCW_CW(RGB_VAI, RGB_VAD), ENCODER_CCW_CW(RGB_SAI, RGB_SAD), },
   [3] = { ENCODER_CCW_CW(RGB_MOD, RGB_RMOD), ENCODER_CCW_CW(RGB_HUI, RGB_HUD), ENCODER_CCW_CW(RGB_VAI, RGB_VAD), ENCODER_CCW_CW(RGB_SAI, RGB_SAD), },
 };
+#endif
 #endif
