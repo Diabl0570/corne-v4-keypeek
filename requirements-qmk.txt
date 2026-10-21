@@ -1,2 +1,4 @@
-qmk
+-c requirements-qmk.lock
+qmk==1.2.0
 -r src/vial-kb/vial-qmk/requirements.txt
+-r src/qmk/qmk_firmware/requirements.txt
