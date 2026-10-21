@@ -26,6 +26,7 @@ static cm_protocol_t protocol;
 static cm_press_t presses[CM_INPUTS];
 static uint8_t logical_owner[CM_LOGICAL_KEYS];
 static uint8_t logical_layer[CM_LOGICAL_KEYS];
+static uint8_t logical_pending[CM_LOGICAL_KEYS];
 static uint32_t applied_revision;
 static bool initialized;
 static usb_configure_state_t usb_state = USB_DEVICE_STATE_NO_INIT;
@@ -100,8 +101,19 @@ static void expire_owners(void) {
     for (uint8_t i = 0; i < CM_LOGICAL_KEYS; ++i) {
         if (!logical_owner[i]) continue;
         const cm_press_t *press = &presses[logical_owner[i] - 1];
-        if ((press->role != CM_ORDINARY && press->role != CM_SPACE_KEY) || press->logical != i) logical_owner[i] = 0;
+        if ((press->role != CM_ORDINARY && press->role != CM_SPACE_KEY) || press->logical != i) {
+            logical_owner[i] = 0;
+            logical_pending[i] = 0;
+        }
     }
+}
+
+void command_mode_post_record(keyrecord_t *record) {
+    if (record->event.pressed || physical_id(record->event) < 0) return;
+    uint8_t slot = logical_id(record->event.key);
+    if (!logical_pending[slot]) return;
+    --logical_pending[slot];
+    if (!logical_pending[slot]) logical_owner[slot] = 0;
 }
 
 bool command_mode_process_record(uint16_t keycode, keyrecord_t *record) {
@@ -115,6 +127,7 @@ bool command_mode_process_record(uint16_t keycode, keyrecord_t *record) {
             if (release->tap && release->generation == state.home_generation) tap_code(KC_SPC);
             break;
         }
+        command_mode_post_record(record);
     }
     return false;
 }
@@ -172,7 +185,15 @@ bool command_mode_pre_action(keyevent_t event) {
         press->role = CM_COLLISION;
         return false;
     }
+    // Fresh presses use current layers; replayed records retain their existing source owner.
+    uint8_t owner = logical_owner[slot];
+    logical_owner[slot] = 0;
     uint8_t layer = layer_switch_get_layer(logical);
+    logical_owner[slot] = owner;
+    if (!menu && owner && logical_layer[slot] != layer) {
+        press->role = CM_COLLISION;
+        return false;
+    }
     uint16_t keycode = keymap_key_to_keycode(layer, logical);
     if (menu) {
         press->role = CM_MENU_KEY;
@@ -192,6 +213,7 @@ bool command_mode_pre_action(keyevent_t event) {
         press->logical = slot;
         logical_layer[slot] = layer;
         logical_owner[slot] = physical + 1;
+        ++logical_pending[slot];
     }
     apply();
     return press->role == CM_ORDINARY || press->role == CM_SPACE_KEY;

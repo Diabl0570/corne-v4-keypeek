@@ -25,6 +25,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     return command_mode_process_record(keycode, record);
 }
 
+void post_process_record_user(uint16_t keycode, keyrecord_t *record) {
+    command_mode_post_record(record);
+}
+
 void housekeeping_task_user(void) {
     command_mode_housekeeping();
 }

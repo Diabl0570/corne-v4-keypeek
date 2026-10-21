@@ -12,6 +12,7 @@ enum {
     CM_SELECT_LAST = CM_SELECT_0 + 15
 };
 
+void command_mode_post_record(keyrecord_t *record);
 bool command_mode_process_record(uint16_t keycode, keyrecord_t *record);
 bool command_mode_pre_action(keyevent_t event);
 bool command_mode_source_layer(keypos_t key, uint8_t *layer);

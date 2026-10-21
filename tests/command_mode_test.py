@@ -55,11 +55,12 @@ def main():
             wrappers += function(action, name)
         for name in ["update_source_layers_cache_impl", "read_source_layers_cache_impl", "update_source_layers_cache", "read_source_layers_cache", "store_or_get_action", "layer_switch_get_layer", "layer_switch_get_action"]:
             wrappers += function(layer, name)
-        for name in ["get_record_keycode", "get_event_keycode", "pre_process_record_quantum", "process_record_quantum"]:
+        for name in ["get_record_keycode", "get_event_keycode", "pre_process_record_quantum", "process_record_quantum", "post_process_record_quantum"]:
             wrappers += function(quantum_source, name)
         for name in ["tap_code", "tap_code_delay"]:
             wrappers += function(action.replace("__attribute__((weak)) ", ""), name)
-        wrappers += function((KEYMAP / "keymap.c").read_text(), "process_record_user")
+        for name in ["process_record_user", "post_process_record_user"]:
+            wrappers += function((KEYMAP / "keymap.c").read_text(), name)
         (work / "qmk_wrappers.c").write_text(wrappers)
         command = ["clang", "-std=gnu11", "-Wall", "-Wextra", "-Werror", "-Wno-unused-parameter", "-Wno-unused-function", "-Wno-missing-field-initializers", "-fsanitize=undefined", "-fno-sanitize-recover=all", "-g", "-I", str(work), "-I", str(KEYMAP), '-DQMK_KEYBOARD_H="command_mode_qmk_shim.h"', "-include", str(work / "command_mode_qmk_shim.h"), str(work / "qmk_wrappers.c"), str(work / "qmk_tapping.c"), str(work / "usb_device_state.c"), str(KEYMAP / "command_state.c"), str(KEYMAP / "command_protocol.c"), str(KEYMAP / "command_qmk.c"), str(ROOT / "tests/command_mode.c"), "-o", str(work / "test")]
         subprocess.run(command, check=True)

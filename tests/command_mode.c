@@ -42,7 +42,8 @@ uint16_t timer_read(void) { return clock_ms; }
 void clear_weak_mods(void) {}
 void clear_keyboard(void) { assert(!"QMK tapping overflow"); }
 void process_record_tap_hint(keyrecord_t *record) { (void)record; }
-void post_process_record_quantum(keyrecord_t *record) { (void)record; }
+void post_process_record_modules(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; }
+void post_process_record_kb(uint16_t keycode, keyrecord_t *record) { post_process_record_user(keycode, record); }
 bool pre_process_record_modules(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; return true; }
 bool pre_process_record_kb(uint16_t keycode, keyrecord_t *record) { (void)keycode; (void)record; return true; }
 bool process_record_quantum_helper(uint16_t keycode, keyrecord_t *record) { return process_record_user(keycode, record); }
@@ -371,6 +372,42 @@ static void qmk_traces(void) {
     assert(output[start + 1].action == ACTION_KEY(KC_SPC) && output[start + 1].pressed);
     for (unsigned i = start; i < output_count; ++i) assert(!output[i].mods);
     no_held(); tick(300);
+    home(); key(1,1); start = output_count;
+    edge(7,4,true); key(1,1); edge(7,4,false);
+    assert(output_count == start);
+    key(1,1); tap_output(start, KC_S); no_held(); tick(300);
+    home(); start = output_count;
+    key(1,1); key(1,1);
+    assert(output_count == start + 4);
+    for (unsigned i = start; i < output_count; ++i) {
+        assert(output[i].action == ACTION_KEY(KC_S) && !output[i].mods);
+        assert(output[i].pressed == ((i - start) % 2 == 0));
+    }
+    no_held(); tick(300);
+
+    home(); start = output_count;
+    edge(5,1,true); key(1,1); assert(output_count == start);
+    edge(7,4,true); key(1,1); edge(7,4,false);
+    key(1,1); edge(5,1,false);
+    assert(output_count == start + 6);
+    characters = 0;
+    for (unsigned i = start; i < output_count; ++i) {
+        assert(!output[i].mods);
+        if (output[i].pressed) assert(output[i].action == ACTION_KEY(characters++ ? KC_S : KC_F));
+    }
+    assert(characters == 3); no_held(); tick(300);
+
+    home(); start = output_count;
+    edge(5,1,true); key(1,1); key(0,5); key(1,1); edge(5,1,false);
+    assert(output_count == start + 4);
+    characters = 0;
+    for (unsigned i = start; i < output_count; ++i) {
+        assert(!output[i].mods);
+        if (output[i].pressed) assert(output[i].action == ACTION_KEY(characters++ ? KC_S : KC_F));
+    }
+    assert(characters == 2); no_held();
+    start = output_count; key(1,1); tap_output(start, KC_7); no_held(); home();
+    puts("PASS resolved source ownership: completed S then FN uses Symbols, FN release restores S, rapid ss survives, queued repeats retain sources across layer changes");
     puts("PASS queued Space: S then Space in both release orders, pending Ctrl hold reports, repeated taps, interrupted Mirror, held/queued Home cancellation and source-layer change");
     puts("PASS replay source ownership: unresolved home-row taps survive FN, manual, Home, mirror and interrupted Menu in both release orders; holds retain original modifier");
     for (unsigned reason = 0; reason < 3; ++reason) {
