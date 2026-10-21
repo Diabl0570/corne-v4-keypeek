@@ -73,6 +73,7 @@ bool cm_report(cm_protocol_t *p, cm_state_t *s, uint8_t *data, uint8_t length, u
     cm_tick(s, now, quiescent);
     if (cm_configuration_busy(s, now)) status = CM_BUSY_CONFIGURATION;
     else if (p->cached && p->revision == s->revision && memcmp(p->request, request, sizeof(request)) == 0) {
+        if (opcode != CM_CLOSE) cm_renew(s, session, now);
         memcpy(data, p->response, CM_REPORT_SIZE);
         return true;
     } else {

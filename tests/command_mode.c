@@ -161,6 +161,13 @@ static void protocol_traces(void) {
     request(p, 4, 8, 99, s.epoch, 1, 15); before = s; cm_report(&protocol, &s, p, 32, 2031, true); assert(p[8] == CM_INVALID_LAYER && !memcmp(&before, &s, sizeof(s)));
     request(p, 3, 9, 98, 0, 0, 0); before = s; cm_report(&protocol, &s, p, 32, 2032, true); assert(p[8] == CM_WRONG_SESSION && !memcmp(&before, &s, sizeof(s)));
     memset(p, 0xC0, 32); before = s; assert(!cm_report(&protocol, &s, p, 32, 2031, true) && !memcmp(&before, &s, sizeof(s)));
+    cm_init(&s); protocol = (cm_protocol_t){0};
+    request(p, 2, 10, 500, 0, 0, 0); memcpy(retry, p, 32);
+    cm_report(&protocol, &s, p, 32, 100, true); cm_report(&protocol, &s, retry, 32, 1900, true);
+    assert(retry[8] == CM_OK && s.lease_at == 1900); cm_tick(&s, 2100, true); assert(s.session == 500);
+    request(p, 3, 11, 500, 0, 0, 0); memcpy(retry, p, 32);
+    cm_report(&protocol, &s, p, 32, 2200, true); cm_report(&protocol, &s, retry, 32, 4000, true);
+    assert(retry[8] == CM_OK && s.lease_at == 4000); cm_tick(&s, 4200, true); assert(s.session == 500 && s.selection.mode == CM_TYPING);
     puts("PASS wire: exact capability bytes, idempotent retry, stale ACK invalidation, padding/version/length rejection, configurator quiet period");
 }
 
