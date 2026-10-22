@@ -223,6 +223,34 @@ static void shift_and_fn_guards(void) {
     puts("PASS held Shift/FN guards: physical and mirrored logical Shift positions, FN [7,4], counterpart [3,4], all six layers plus Review, both Mirror states; no F18 or either assistant voice chord");
 }
 
+static void picker_import_selectors(void) {
+    for (unsigned mirror = 0; mirror < 2; ++mirror)
+        for (unsigned side = 0; side < 2; ++side)
+            for (unsigned col = 0; col < 4; ++col) {
+                begin_trial(9,mirror,false);
+                edge(3,3,true); tick(205);
+                require_trial(command_mode_state()->picker && layer_state == (1u << 15),"held physical Menu did not open Picker layer 15");
+                require_trial(is_swap_hands_on() == mirror,"opening Picker changed held Mirror");
+                uint8_t row = side?6:2, selected = 12 + col;
+                trial.row = physical_row(row);
+                trial.col = col;
+                key(trial.row,col);
+                const cm_state_t *state = command_mode_state();
+                require_trial(!state->picker && state->selection.mode == CM_MANUAL && state->selection.layer == selected,
+                              "Picker logical [%u,%u] selected mode %u layer %u, expected manual layer %u with Picker closed",
+                              row,col,state->selection.mode,state->selection.layer,selected);
+                edge(3,3,false);
+                require_trial(!state->picker && state->selection.mode == CM_MANUAL && state->selection.layer == selected,
+                              "Menu release lost selected layer %u",selected);
+                finish_trial();
+                require_trial(!state->picker && state->selection.mode == CM_MANUAL && state->selection.layer == selected && layer_state == (1u << selected),
+                              "Mirror release lost manual layer %u",selected);
+                require_no_voice();
+                require_modifiers_only(0);
+            }
+    puts("PASS Picker selector reports: all eight layer 12..15 cells in both Mirror states; held physical Menu opens Picker, selection survives Menu/Mirror release, no host keys or modifiers");
+}
+
 int main(void) {
     if (source_regression_main()) return 1;
     require_trial(scenarios == 385,"source regression count changed to %u",scenarios);
@@ -230,6 +258,7 @@ int main(void) {
     assistant_shortcuts();
     home_and_menu_recovery();
     shift_and_fn_guards();
+    picker_import_selectors();
     printf("All %u preset/report scenarios passed with UBSan: 385 original regressions plus %u app-command trial scenarios.\n",scenarios,scenarios-385);
     return 0;
 }
