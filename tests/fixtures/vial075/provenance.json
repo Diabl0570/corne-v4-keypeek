@@ -1,0 +1,54 @@
+{
+  "vial_gui": {
+    "repository": "https://github.com/vial-kb/vial-gui",
+    "ref": "v0.7.5",
+    "commit": "e42622c352b69eff523a467718db487ab9c9cbf2",
+    "license": "GPL-2.0-or-later"
+  },
+  "simpleeval": {
+    "repository": "https://github.com/danthedeckie/simpleeval",
+    "commit": "41c99b8e224a7a0ae0ac59c773598fe79a4470db",
+    "pin_source": "vial-gui requirements.txt",
+    "license": "MIT"
+  },
+  "files": [
+    {
+      "path": "keycodes/keycodes.py",
+      "upstream_path": "src/main/python/keycodes/keycodes.py",
+      "sha256": "b3ab4d289c874985d88dc30f8b10dac87a39dc6905aac02b5bed1bf149a4bc7e"
+    },
+    {
+      "path": "keycodes/keycodes_v5.py",
+      "upstream_path": "src/main/python/keycodes/keycodes_v5.py",
+      "sha256": "9047991c53fa4cc2b974dc4b6e8feeec03818c446ff3a8ee6eb3a06b7c36aa4c"
+    },
+    {
+      "path": "keycodes/keycodes_v6.py",
+      "upstream_path": "src/main/python/keycodes/keycodes_v6.py",
+      "sha256": "517b7d9e32fccf66c05147f7588b259215b2bb5ec74b52120b423d04160e925c"
+    },
+    {
+      "path": "any_keycode.py",
+      "upstream_path": "src/main/python/any_keycode.py",
+      "sha256": "ced19c8b98ab50542a531c26b9e1553964ec532fb129889f188d7295c6241fcb"
+    },
+    {
+      "path": "COPYING",
+      "upstream_path": "COPYING",
+      "sha256": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643"
+    },
+    {
+      "path": "simpleeval.py",
+      "upstream_path": "simpleeval.py",
+      "sha256": "7dbc29d0a347fc7d454f7f0c3914303d8a6df0044cf6c120d8320e664bc5669f"
+    },
+    {
+      "path": "simpleeval-LICENCE",
+      "upstream_path": "LICENCE",
+      "sha256": "91efc982fa45add893fa80ec3ab1524f31e50a1386adba1424ddcf432359850a"
+    }
+  ],
+  "local_files": {
+    "keycodes/__init__.py": "Empty package marker only. No codec logic modified."
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "source": "presets/command-mode/home-row-mods/home-row-mods16.vil",
+  "source_sha256": "59c5c850fe0762d6756d9b98af08bfde1234e45ddc457679c846fb13447fd72d",
+  "candidate_sha256": "bcf518a1b5b2d54e021a8779bc4bf4f96ff0529f19318df7d3f178abc93b304f",
+  "import_candidate": "app-trial16-vial075.vil",
+  "import_candidate_sha256": "9fb8c9d515c7669bb9f9f56dbe75117380629ddb126ab6f25962c707fe680ab2",
+  "changed_cells": 121,
+  "changed_layers": [
+    6,
+    7,
+    8,
+    9,
+    10,
+    13
+  ],
+  "changed_cells_reference": "canonical trial versus pinned source",
+  "import_variant_string_changed_cells": 129,
+  "canonical_unchanged_layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    11,
+    12,
+    14,
+    15
+  ],
+  "import_variant_literally_unchanged_layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    11,
+    12,
+    14
+  ],
+  "all_non_layout_fields_unchanged": true,
+  "firmware_helper_registry_and_historical_assets_unchanged": true,
+  "requires_flash": false,
+  "fresh_live_export_used": false,
+  "new_preset_imported_or_physically_tested": false,
+  "legacy_source": {
+    "status": "legacy-source",
+    "fresh_live_state_confirmed": false,
+    "lost_picker_cell_count": 8,
+    "lost_picker_cells": [
+      {
+        "path": "layout[15][2][0]",
+        "before": "USER16",
+        "after": "KC_NO"
+      },
+      {
+        "path": "layout[15][2][1]",
+        "before": "USER17",
+        "after": "KC_NO"
+      },
+      {
+        "path": "layout[15][2][2]",
+        "before": "USER18",
+        "after": "KC_NO"
+      },
+      {
+        "path": "layout[15][2][3]",
+        "before": "USER19",
+        "after": "KC_NO"
+      },
+      {
+        "path": "layout[15][6][0]",
+        "before": "USER16",
+        "after": "KC_NO"
+      },
+      {
+        "path": "layout[15][6][1]",
+        "before": "USER17",
+        "after": "KC_NO"
+      },
+      {
+        "path": "layout[15][6][2]",
+        "before": "USER18",
+        "after": "KC_NO"
+      },
+      {
+        "path": "layout[15][6][3]",
+        "before": "USER19",
+        "after": "KC_NO"
+      }
+    ],
+    "trial_repairs_these_cells_only_if_exact_legacy_source_matches": true,
+    "other_fields_and_cells_must_match_source_modulo_observed_export_aliases": true
+  },
+  "codec": {
+    "repository": "https://github.com/vial-kb/vial-gui",
+    "ref": "v0.7.5",
+    "commit": "e42622c352b69eff523a467718db487ab9c9cbf2",
+    "simpleeval_commit": "41c99b8e224a7a0ae0ac59c773598fe79a4470db",
+    "fixture_provenance": "tests/fixtures/vial075/provenance.json",
+    "fixture_provenance_sha256": "47bf02a0ee9db4f371a55840813f7e4a127df08ac5282e85c2831d02d2887465",
+    "canonical_direct_import_supported": false,
+    "canonical_import_blocker": "Stock Vial 0.7.5 registers only USER00..USER15 without customKeycodes metadata.",
+    "import_representation_only_cells": 8,
+    "import_representation_changes": [
+      {
+        "path": "layout[15][2][0]",
+        "before": "USER16",
+        "after": "0x7e10"
+      },
+      {
+        "path": "layout[15][2][1]",
+        "before": "USER17",
+        "after": "0x7e11"
+      },
+      {
+        "path": "layout[15][2][2]",
+        "before": "USER18",
+        "after": "0x7e12"
+      },
+      {
+        "path": "layout[15][2][3]",
+        "before": "USER19",
+        "after": "0x7e13"
+      },
+      {
+        "path": "layout[15][6][0]",
+        "before": "USER16",
+        "after": "0x7e10"
+      },
+      {
+        "path": "layout[15][6][1]",
+        "before": "USER17",
+        "after": "0x7e11"
+      },
+      {
+        "path": "layout[15][6][2]",
+        "before": "USER18",
+        "after": "0x7e12"
+      },
+      {
+        "path": "layout[15][6][3]",
+        "before": "USER19",
+        "after": "0x7e13"
+      }
+    ],
+    "comparison_aliases": {
+      "KC_LCTL": "KC_LCTRL",
+      "LCTL(LALT(LSFT(KC_D)))": "MEH(KC_D)",
+      "LALT(LGUI(KC_LEFT))": "0xc50",
+      "LALT(LGUI(KC_RIGHT))": "0xc4f",
+      "LALT(LGUI(KC_SPACE))": "0xc2c",
+      "USER16": "0x7e10",
+      "USER17": "0x7e11",
+      "USER18": "0x7e12",
+      "USER19": "0x7e13"
+    }
+  },
+  "files": {
+    "app-trial16.vil": "bcf518a1b5b2d54e021a8779bc4bf4f96ff0529f19318df7d3f178abc93b304f",
+    "app-trial16-vial075.vil": "9fb8c9d515c7669bb9f9f56dbe75117380629ddb126ab6f25962c707fe680ab2",
+    "changes.json": "64d0453dd5c65ebc892344f9ffacc9e9636c07f1910cbf5cde35d0df28abd184"
+  }
+}
