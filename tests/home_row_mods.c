@@ -53,15 +53,15 @@ static void released(void) {
     for (unsigned i=0;i<256;++i) assert(!keys[i]);
     tick(250);
     assert(action_tapping_is_idle());
-    ++scenarios;
 }
 static void select_panel(uint8_t layer) {
     released();
     command_mode_housekeeping();
-    cm_init((cm_state_t *)command_mode_state());
+    cm_home((cm_state_t *)command_mode_state());
     cm_select((cm_state_t *)command_mode_state(),layer);
     command_mode_housekeeping();
     report_count=0;
+    ++scenarios;
 }
 
 static uint8_t original_tap(uint8_t layer,uint8_t row,uint8_t col) {
@@ -148,7 +148,7 @@ static void fast_rolls_keep_saved_timing(void) {
 static void put32(uint8_t *p,uint32_t v) { for (unsigned i=0;i<4;++i) p[i]=v>>(i*8); }
 static uint8_t request(uint8_t op,uint32_t id,uint32_t sequence,uint8_t layer) {
     uint8_t p[32]={0xD3,0x43,1,op};
-    put32(p+4,id); put32(p+8,77); put32(p+12,command_mode_state()->epoch); put32(p+16,sequence); p[20]=layer;
+    put32(p+4,id); put32(p+8,77); put32(p+12,op==2?0:command_mode_state()->epoch); put32(p+16,sequence); p[20]=layer;
     assert(command_mode_handle_report(p,32));
     return p[8];
 }
