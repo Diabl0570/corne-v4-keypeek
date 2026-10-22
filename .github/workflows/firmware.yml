@@ -23,6 +23,9 @@ jobs:
           python3 tests/command_mode_assets.py
           python3 tests/storage_bootstrap.py
           python3 tests/command_mode_test.py
+          python3 tools/home_row_mods_preset.py check
+          python3 tests/home_row_mods_assets.py
+          python3 tests/home_row_mods_test.py
           python3 tests/keypeek_packet.py
           clang -std=c11 -Wall -Wextra -Werror -fsanitize=undefined -DCOMMAND_MODE_ENABLE tests/layer_lighting.c -o /tmp/command-lighting
           /tmp/command-lighting

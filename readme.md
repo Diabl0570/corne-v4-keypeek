@@ -8,6 +8,8 @@ The Vial standard keymap automatically indicates the highest active/default laye
 
 [Command mode](docs/command-mode.md) adds sixteen layers, Menu picker/Home, momentary hand swapping and an app-context Mac helper for **rev4_1/standard Vial**. The fresh live backup is committed separately before feature work. Review the [physical key legend](presets/command-mode/legend.html), exact baseline/experimental presets and future upgrade/import procedure before flashing.
 
+For the installed command-mode firmware, [restore home-row modifiers and familiar Tab/Shift positions](docs/home-row-mods.md) with the optional `home-row-mods16.vil`. This preset preserves your settings and requires no firmware flash. Compare a fresh Vial export before importing it.
+
 ## Build the pinned Vial firmware
 
 Clone the repository and its pinned dependencies:
