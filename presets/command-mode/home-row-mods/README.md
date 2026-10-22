@@ -43,4 +43,4 @@ python3 tests/home_row_mods_assets.py
 
 Generation accepts only the exact verified source bytes. The transform derives hold families from base0 and rejects unrepresentable home-row tap codes. It emits a new preset, the complete before/after diff and hashes. It never rewrites the old presets or firmware assets.
 
-Follow [the manual loading guide](../../../docs/home-row-mods.md) before importing. Export your current device state first. The read-only comparison must report a match before you use this preset.
+Follow [the manual loading guide](../../../docs/home-row-mods.md) before importing. Export your current device state first. The read-only comparison must report a match before you use this preset. Quit Vial with Command-Q before you resume the helper.

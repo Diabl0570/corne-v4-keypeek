@@ -22,7 +22,7 @@ This file is based on the verified installed baseline16. No fresh live device ex
 
 6. After a baseline match, import the complete `home-row-mods16.vil` in Vial.
 7. Export again and compare the result with the same command. Expect `Current export already matches home-row-mods16`.
-8. Close Vial.
+8. Quit Vial with Command-Q. Closing its window can leave Vial running and keep the helper paused.
 9. Start KeyPeek again.
 10. Type `resume` in the helper terminal. Wait for its ready status.
 11. Hold Menu and select V to enable Auto deliberately.
@@ -40,4 +40,4 @@ The comparison reads local files only. It never opens HID or imports a preset. G
 
 The [controls reference and exact difference list](../presets/command-mode/home-row-mods/README.md) identify every changed position. Menu, Home, FN, Mirror, normal Space, specialized Mouse and Picker layers, encoders and saved timing settings remain unchanged.
 
-To undo this trial, return Home and pause the helper, quit KeyPeek, and import the fresh pre-import export you saved. Close Vial before you resume the helper and KeyPeek. Select Auto again only when you want app following.
+To undo this trial, return Home and pause the helper, quit KeyPeek, and import the fresh pre-import export you saved. Quit Vial with Command-Q before you resume the helper and KeyPeek. Select Auto again only when you want app following.
