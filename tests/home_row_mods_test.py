@@ -17,7 +17,7 @@ from command_mode_assets import c_code
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--preset', type=Path, default=ROOT / 'presets/command-mode/baseline16.vil')
+    parser.add_argument('--preset', type=Path, default=ROOT / 'presets/command-mode/home-row-mods/home-row-mods16.vil')
     args = parser.parse_args()
     preset = json.loads(args.preset.read_text())
     qmk = ROOT / 'src/vial-kb/vial-qmk'
@@ -34,16 +34,19 @@ def main():
         shutil.copy(ROOT / 'tests/command_mode_qmk_shim.h', work)
         with (work / 'command_mode_qmk_shim.h').open('a') as f:
             f.write((ROOT / 'tests/home_row_mods_shim.h').read_text())
-        for name in ('action_code.h','modifiers.h','keycodes.h','action_tapping.h','quantum_keycodes.h','quantum_keycodes_legacy.h'):
+        for name in ('action_code.h','modifiers.h','keycodes.h','keycode.h','action_tapping.h','quantum_keycodes.h','quantum_keycodes_legacy.h'):
             shutil.copy(quantum / name, work)
         shutil.copy(quantum / 'keymap_extras/keymap_us.h', work)
         shutil.copy(quantum / 'sequencer/sequencer.h', work)
         for name in ('usb_device_state.c','usb_device_state.h'):
             shutil.copy(qmk / 'tmk_core/protocol' / name, work)
-        for name in ('action.h','action_layer.h','action_util.h','keycode.h','timer.h'):
+        for name in ('action.h','action_layer.h','action_util.h','timer.h'):
             (work / name).write_text('#include "command_mode_qmk_shim.h"\n')
-        matrix = 'const uint16_t preset_maps[16][8][7] = {\n'
-        matrix += ',\n'.join('{'+','.join('{'+','.join(c_code(v) for v in row)+'}' for row in layer)+'}' for layer in preset['layout'])+'\n};\n'
+        matrix = ''
+        baseline = json.loads((ROOT / 'presets/command-mode/baseline16.vil').read_text())
+        for name,data in (('preset_maps',preset),('baseline_maps',baseline)):
+            matrix += 'const uint16_t '+name+'[16][8][7] = {\n'
+            matrix += ',\n'.join('{'+','.join('{'+','.join(c_code(v) for v in row)+'}' for row in layer)+'}' for layer in data['layout'])+'\n};\n'
         (work / 'preset.h').write_text(matrix)
         (work / 'qmk_tapping.c').write_text('#include "command_mode_qmk_shim.h"\n' + tapping)
         wrappers = '#include "command_mode_qmk_shim.h"\n#include "command_qmk.h"\n#include "action_tapping.h"\n'

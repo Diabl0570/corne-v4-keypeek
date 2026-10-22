@@ -1,7 +1,7 @@
 #ifndef HOME_ROW_MODS_SHIM_H
 #define HOME_ROW_MODS_SHIM_H
 #include "quantum_keycodes.h"
-#define MOD_BIT(code) (1 << ((code)&0x07))
+#include "keycode.h"
 action_t action_for_keycode(uint16_t keycode);
 static inline uint16_t keycode_config(uint16_t code) { return code; }
 static inline uint8_t mod_config(uint8_t mods) { return mods; }
