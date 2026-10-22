@@ -25,7 +25,9 @@ Numbers and Symbols retain their existing home-row tap keys. Blank tap positions
 
 Both left Tab positions, matrix 1,0 and 1,6, are real Tab. Physical left Shift at 2,0 and right Shift at 5,6 return to their base roles. Command panels also have left Shift at 6,0, the mirrored destination of 2,0. Hold a home-row Command key past the existing 200 ms tapping term, then press your usual Tab for Command-Tab. Add a physical Shift for Shift-Command-Tab. A fast roll that releases the home-row key before 200 ms remains a tap, as on your base layer. Quick-tap timing and all other tap/hold settings stay unchanged.
 
-OpenAI 7 now places explicit F18 on the left Backspace thumb, matrix 3,4. Claude 8 places the guarded Control-Option-Shift-D Raycast dictation chord there. Each action has one explicit location. Their old left-Shift and mirrored locations both become Shift, so Shift cannot invoke voice. The protected right FN thumb at 7,4 is not a voice duplicate. No voice shortcut was executed during this change.
+OpenAI 7 now places explicit F18 on the left bracket auxiliary key, matrix 0,6. Claude 8 places the guarded Control-Option-Shift-D Raycast dictation chord there. Each action has one logical binding. Under Mirror, the right bracket auxiliary key at 4,6 reaches that binding. Logical 4,6 remains unused.
+
+The left Backspace thumb at 3,4 stays unused in these panels because Mirror swaps it with the protected right FN thumb at 7,4. Placing voice there would make mirrored FN invoke voice. Both old voice positions, 2,0 and 6,0, become Shift. Normal and mirrored Shift and FN cannot invoke voice. No voice shortcut was executed during this change.
 
 Mouse 11, Picker 15, Maintenance 3 and reserved 4,5,14 stay identical. Menu, Home, FN, right Command thumb, Mirror controls, normal Space, encoders, macros and every other saved field stay identical. Mirror follows logical positions. A mirrored right-hand home-row key uses the opposite side's hold family, as defined by the hand-swap map.
 

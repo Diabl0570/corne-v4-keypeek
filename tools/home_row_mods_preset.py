@@ -49,7 +49,8 @@ def validate_source(source):
         if layout[0][r][c] != expected:
             raise ValueError(f'unexpected base hold family at layout[0][{r}][{c}]')
     for layer, voice in VOICE_KEYS.items():
-        if layout[layer][2][0] != voice or layout[layer][6][0] != voice or layout[layer][3][4] != 'KC_NO':
+        if (layout[layer][2][0] != voice or layout[layer][6][0] != voice
+                or any(layout[layer][r][c] != 'KC_NO' for r, c in ((0, 6), (4, 6), (3, 4)))):
             raise ValueError(f'unexpected voice source or occupied destination in layer{layer}')
 
 
@@ -79,7 +80,7 @@ def transform(source):
         if layer in COMMAND_LAYERS:
             put(layer, 6, 0, 'KC_LSHIFT', 'mirrored left Shift, no voice action')
         if layer in VOICE_KEYS:
-            put(layer, 3, 4, VOICE_KEYS[layer], 'explicit voice action, left Backspace thumb only')
+            put(layer, 0, 6, VOICE_KEYS[layer], 'explicit voice action, bracket auxiliary key only')
     changes.sort(key=lambda change: tuple(map(int, re.findall(r'\[(\d+)\]', change['path']))))
     return candidate, changes
 

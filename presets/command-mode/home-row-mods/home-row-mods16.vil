@@ -528,7 +528,7 @@
         "LGUI(KC_C)",
         "LGUI(KC_V)",
         "LGUI(KC_F)",
-        "KC_NO"
+        "KC_F18"
       ],
       [
         "KC_TAB",
@@ -553,7 +553,7 @@
         -1,
         -1,
         "TG(1)",
-        "KC_F18",
+        "KC_NO",
         "USER02",
         -1
       ],
@@ -602,7 +602,7 @@
         "LGUI(KC_C)",
         "LGUI(KC_V)",
         "LGUI(KC_F)",
-        "KC_NO"
+        "LCTL(LALT(LSFT(KC_D)))"
       ],
       [
         "KC_TAB",
@@ -627,7 +627,7 @@
         -1,
         -1,
         "TG(1)",
-        "LCTL(LALT(LSFT(KC_D)))",
+        "KC_NO",
         "USER02",
         -1
       ],

@@ -36,7 +36,7 @@ The comparison reads local files only. It never opens HID or imports a preset. G
 3. In Chrome and Claude Auto panels, repeat the Command-Tab checks with both left and right home-row Command keys.
 4. Tap the home-row keys briefly. Check the original letters, symbol taps and command-panel arrow taps. A fast roll released before 200 ms remains a tap under your unchanged timing settings.
 5. Hold Mirror in a command panel and check the opposite cluster, Tab and Shift. Double-tap Menu to return Home, then release held keys. Check ordinary typing resumes.
-6. Confirm that physical Shift does not invoke a voice shortcut. The OpenAI F18 action and Claude's guarded dictation chord now live only on the left Backspace thumb in their respective panels. There is no mirrored voice duplicate on right FN.
+6. Confirm that normal and mirrored Shift and FN do not invoke a voice shortcut. The OpenAI F18 action and Claude's guarded dictation chord each have one logical binding on the left bracket auxiliary key, matrix 0,6. Mirror moves access to the right bracket auxiliary key at 4,6. The left Backspace thumb stays unused because its mirrored partner is right FN.
 
 The [controls reference and exact difference list](../presets/command-mode/home-row-mods/README.md) identify every changed position. Menu, Home, FN, Mirror, normal Space, specialized Mouse and Picker layers, encoders and saved timing settings remain unchanged.
 

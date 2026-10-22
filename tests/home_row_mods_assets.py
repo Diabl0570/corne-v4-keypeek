@@ -30,7 +30,7 @@ class HomeRowPresetTests(unittest.TestCase):
         allowed |= {(layer, row, col) for layer in layers for row, col in ((1, 0), (1, 6), (2, 0), (5, 6))
                     if self.source['layout'][layer][row][col] != self.source['layout'][0][row][col]}
         allowed |= {(layer, 6, 0) for layer in (6, 7, 8, 9, 10, 12, 13)}
-        allowed |= {(7, 3, 4), (8, 3, 4)}
+        allowed |= {(7, 0, 6), (8, 0, 6)}
         self.assertEqual(actual, allowed)
         self.assertEqual(len(actual), 115)
         paths = {tuple(map(int, re.findall(r'\[(\d+)\]', change['path']))) for change in self.changes}
@@ -77,7 +77,9 @@ class HomeRowPresetTests(unittest.TestCase):
         for layer in (6, 7, 8, 9, 10, 12, 13):
             self.assertEqual(self.candidate['layout'][layer][6][0], 'KC_LSHIFT')
         for layer, action in ((7, 'KC_F18'), (8, 'LCTL(LALT(LSFT(KC_D)))')):
-            self.assertEqual(self.candidate['layout'][layer][3][4], action)
+            self.assertEqual(self.candidate['layout'][layer][0][6], action)
+            self.assertEqual(self.candidate['layout'][layer][4][6], 'KC_NO')
+            self.assertEqual(self.candidate['layout'][layer][3][4], 'KC_NO')
             self.assertEqual(sum(key == action for row in self.candidate['layout'][layer] for key in row), 1)
             self.assertEqual(self.candidate['layout'][layer][2][0], 'KC_LSHIFT')
             self.assertEqual(self.candidate['layout'][layer][6][0], 'KC_LSHIFT')
@@ -99,14 +101,16 @@ class HomeRowPresetTests(unittest.TestCase):
             self.assertLessEqual(expected, 255)
 
     def test_invalid_source_shape_family_or_tap_rejected(self):
-        for kind in ('layers', 'row', 'encoders', 'hole', 'family', 'chord', 'custom', 'mouse', 'number', 'voice'):
+        for kind in ('layers', 'row', 'encoders', 'hole', 'family', 'chord', 'custom', 'mouse', 'number', 'voice', 'voice_mirror', 'fn_mirror'):
             changed = copy.deepcopy(self.source)
             if kind == 'layers': changed['layout'].pop()
             elif kind == 'row': changed['layout'][1][1].pop()
             elif kind == 'encoders': changed['encoder_layout'][1].pop()
             elif kind == 'hole': changed['layout'][1][0][0] = -1
             elif kind == 'family': changed['layout'][0][5][2] = 'RCTL_T(KC_L)'
-            elif kind == 'voice': changed['layout'][7][3][4] = 'KC_A'
+            elif kind == 'voice': changed['layout'][7][0][6] = 'KC_A'
+            elif kind == 'voice_mirror': changed['layout'][7][4][6] = 'KC_A'
+            elif kind == 'fn_mirror': changed['layout'][7][3][4] = 'KC_A'
             else:
                 changed['layout'][6][1][1] = {'chord': 'LGUI(KC_A)', 'custom': 'USER00',
                                              'mouse': 'KC_MS_L', 'number': 0x100}[kind]

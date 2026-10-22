@@ -210,6 +210,12 @@
     "reason": "mirrored left Shift, no voice action"
   },
   {
+    "path": "layout[7][0][6]",
+    "before": "KC_NO",
+    "after": "KC_F18",
+    "reason": "explicit voice action, bracket auxiliary key only"
+  },
+  {
     "path": "layout[7][1][0]",
     "before": "KC_LSHIFT",
     "after": "KC_TAB",
@@ -252,12 +258,6 @@
     "reason": "restore familiar Tab or Shift"
   },
   {
-    "path": "layout[7][3][4]",
-    "before": "KC_NO",
-    "after": "KC_F18",
-    "reason": "explicit voice action, left Backspace thumb only"
-  },
-  {
     "path": "layout[7][5][1]",
     "before": "KC_LEFT",
     "after": "RGUI_T(KC_LEFT)",
@@ -292,6 +292,12 @@
     "before": "KC_F18",
     "after": "KC_LSHIFT",
     "reason": "mirrored left Shift, no voice action"
+  },
+  {
+    "path": "layout[8][0][6]",
+    "before": "KC_NO",
+    "after": "LCTL(LALT(LSFT(KC_D)))",
+    "reason": "explicit voice action, bracket auxiliary key only"
   },
   {
     "path": "layout[8][1][0]",
@@ -334,12 +340,6 @@
     "before": "LCTL(LALT(LSFT(KC_D)))",
     "after": "KC_LSHIFT",
     "reason": "restore familiar Tab or Shift"
-  },
-  {
-    "path": "layout[8][3][4]",
-    "before": "KC_NO",
-    "after": "LCTL(LALT(LSFT(KC_D)))",
-    "reason": "explicit voice action, left Backspace thumb only"
   },
   {
     "path": "layout[8][5][1]",
