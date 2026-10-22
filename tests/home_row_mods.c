@@ -174,6 +174,14 @@ static void focus_home_and_mirror(void) {
     }
     for (uint8_t layer=7;layer<=9;++layer) {
         select_panel(layer);
+        edge(3,5,true); key(7,4); edge(3,5,false); released();
+        for (unsigned i=0;i<report_count;++i) {
+            if (reports[i].keys[KC_F18] || reports[i].keys[KC_D]) {
+                fprintf(stderr,"FAIL panel %u: mirrored physical FN emitted a voice shortcut\n",layer);
+                exit(1);
+            }
+        }
+        select_panel(layer);
         edge(3,5,true); assert(is_swap_hands_on());
         edge(5,1,true); tick(205);
         edge(2,0,true); key(5,0); assert(saw(KC_TAB,8|2));
@@ -189,7 +197,7 @@ static void focus_home_and_mirror(void) {
     edge(3,5,true); edge(5,1,true); tick(205);
     key(2,5); assert(!is_swap_hands_on() && command_mode_state()->selection.mode==CM_TYPING);
     edge(5,1,false); edge(3,5,false); released();
-    puts("PASS authority/ownership: focus deferred while GUI held; Home keeps paired releases; Mirror GUI/Tab/Shift works without voice; collisions and Home clear safely");
+    puts("PASS authority/ownership: focus deferred while GUI held; Home keeps paired releases; Mirror GUI/Tab/Shift/FN avoids voice; collisions and Home clear safely");
 }
 int main(void) {
     select_panel(9);
