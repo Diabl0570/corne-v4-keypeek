@@ -1,4 +1,3 @@
-"""Check the separate app trial's exact preset boundary and local-only CLI."""
 import copy
 import hashlib
 import importlib.util

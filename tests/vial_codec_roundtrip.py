@@ -1,4 +1,3 @@
-"""Exercise the original pinned Vial 0.7.5 keycode codec, entirely offline."""
 import copy
 import hashlib
 import importlib.util

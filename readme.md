@@ -10,6 +10,8 @@ The Vial standard keymap automatically indicates the highest active/default laye
 
 For the installed command-mode firmware, [restore home-row modifiers and familiar Tab/Shift positions](docs/home-row-mods.md) with the optional `home-row-mods16.vil`. This preset preserves your settings and requires no firmware flash. Compare a fresh Vial export before importing it.
 
+The separate [app command trial](docs/app-command-trial.md) starts from that home-row preset. It puts editing commands on Z/X/C/V, moves Home to T and Find to B in the shared command panels, and adds OpenAI sidebar navigation and native one-tap dictation. It requires no flash or helper update. Its comparison tool recognizes equivalent Vial 0.7.5 keycode exports and rejects layout or settings drift before import.
+
 ## Build the pinned Vial firmware
 
 Clone the repository and its pinned dependencies:
