@@ -18,9 +18,11 @@ from command_mode_assets import c_code
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--preset', type=Path, default=ROOT / 'presets/command-mode/home-row-mods/home-row-mods16.vil')
+    parser.add_argument('--fixture', type=Path, default=ROOT / 'tests/home_row_mods.c', help='C report fixture to compile')
+    parser.add_argument('--qmk-source', type=Path, default=ROOT / 'src/vial-kb/vial-qmk', help='patched pinned QMK checkout')
     args = parser.parse_args()
     preset = json.loads(args.preset.read_text())
-    qmk = ROOT / 'src/vial-kb/vial-qmk'
+    qmk = args.qmk_source
     assert subprocess.check_output(['git', '-C', str(qmk), 'rev-parse', 'HEAD'], text=True).strip() == 'dd43959ae5c08d8a28d38a1acf7b04e86b14a344'
     assert {k:preset['settings'][k] for k in ('7','18','19','21','22','23','24','25','26','27')} == {'7':200,'18':0,'19':80,'21':0,'22':0,'23':0,'24':0,'25':200,'26':0,'27':0}
     quantum = qmk / 'quantum'
@@ -64,7 +66,7 @@ def main():
         for name in ('process_record_user','post_process_record_user'):
             wrappers += function((keymap / 'keymap.c').read_text(), name)
         (work / 'qmk_wrappers.c').write_text(wrappers)
-        command = ['clang','-std=gnu11','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-Wno-unused-function','-Wno-missing-field-initializers','-fsanitize=undefined','-fno-sanitize-recover=all','-g','-I',str(work),'-I',str(keymap),'-include',str(work/'command_mode_qmk_shim.h'),str(work/'qmk_wrappers.c'),str(work/'qmk_tapping.c'),str(work/'usb_device_state.c'),str(keymap/'command_state.c'),str(keymap/'command_protocol.c'),str(keymap/'command_qmk.c'),str(ROOT/'tests/home_row_mods.c'),'-o',str(work/'test')]
+        command = ['clang','-std=gnu11','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-Wno-unused-function','-Wno-missing-field-initializers','-fsanitize=undefined','-fno-sanitize-recover=all','-g','-I',str(work),'-I',str(keymap),'-include',str(work/'command_mode_qmk_shim.h'),str(work/'qmk_wrappers.c'),str(work/'qmk_tapping.c'),str(work/'usb_device_state.c'),str(keymap/'command_state.c'),str(keymap/'command_protocol.c'),str(keymap/'command_qmk.c'),str(args.fixture),'-o',str(work/'test')]
         subprocess.run(command,check=True)
         print('Preset under test: '+str(args.preset),flush=True)
         subprocess.run([str(work/'test')],check=True)

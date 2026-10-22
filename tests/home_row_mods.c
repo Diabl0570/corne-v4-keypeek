@@ -3,6 +3,10 @@
 #include "command_protocol.h"
 #include "preset.h"
 
+#ifndef HOME_ROW_TEST_HOME_ROW
+#define HOME_ROW_TEST_HOME_ROW 2
+#endif
+
 layer_state_t layer_state, default_layer_state = 1;
 static uint32_t clock_ms;
 static bool keys[256];
@@ -167,7 +171,7 @@ static void focus_home_and_mirror(void) {
     for (unsigned established=0;established<2;++established) {
         select_panel(9);
         edge(1,1,true); tick(established?205:20);
-        key(2,5);
+        key(HOME_ROW_TEST_HOME_ROW,5);
         assert(command_mode_state()->selection.mode==CM_TYPING);
         tick(220); key(1,0); assert(saw(KC_TAB,8));
         edge(1,1,false); released();
@@ -195,7 +199,7 @@ static void focus_home_and_mirror(void) {
     edge(3,5,false); released();
     select_panel(9);
     edge(3,5,true); edge(5,1,true); tick(205);
-    key(2,5); assert(!is_swap_hands_on() && command_mode_state()->selection.mode==CM_TYPING);
+    key(HOME_ROW_TEST_HOME_ROW,5); assert(!is_swap_hands_on() && command_mode_state()->selection.mode==CM_TYPING);
     edge(5,1,false); edge(3,5,false); released();
     puts("PASS authority/ownership: focus deferred while GUI held; Home keeps paired releases; Mirror GUI/Tab/Shift/FN avoids voice; collisions and Home clear safely");
 }
