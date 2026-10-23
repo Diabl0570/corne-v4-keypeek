@@ -182,4 +182,56 @@ struct HelperRecoveryTests {
         #expect(CommandError.status(.wrongSession).recovery == .reconnect)
         #expect(CommandError.outputInFlight.recovery == .reconnect)
     }
+
+    @Test func nativeNotReadyCompletionIsRecoverable() {
+        let error = NativeHIDTransport.error(kIOReturnNotReady, operation: "completion")
+        #expect(error == .hidUnavailable(operation: "completion", code: -536870184))
+        #expect(error.recovery == .reconnect)
+    }
+
+    @Test func notReadyCompletionReconnectsWithFreshDisarmedSession() throws {
+        var time: TimeInterval = 0
+        let original = NotReadyTransport()
+        let client = CommandClient(transport: original, makeSession: { 41 })
+        try client.start()
+        original.device.keyboardSelect(mode: .auto, layer: 7)
+        original.failCompletion = true
+        let replacement = MockReportTransport()
+        replacement.keyboardSelect(mode: .auto, layer: 7)
+        var discoveries = 0
+        let runtime = HelperRuntime(client: client, observeApps: false, now: { time }, makeClient: {
+            discoveries += 1
+            return CommandClient(transport: replacement, makeSession: { 42 })
+        })
+        runtime.tick(observation: observation())
+        #expect(runtime.recovery == .waiting(deadline: 0.5, reason: .hidUnavailable(
+            operation: "completion", code: kIOReturnNotReady)))
+        #expect(!original.device.isOpen)
+        time = 0.49
+        runtime.tick(observation: observation())
+        #expect(discoveries == 0)
+        time = 0.5
+        runtime.tick(observation: observation("com.google.Chrome"))
+        #expect(discoveries == 1)
+        #expect(runtime.recovery == .active)
+        #expect(runtime.client?.session == 42)
+        #expect(runtime.client?.desiredLayer == 9)
+        #expect(replacement.mode == .manual)
+        #expect(replacement.selectedLayer == 7)
+        #expect(!replacement.outputReports.contains { $0[3] == Opcode.context.rawValue })
+    }
+}
+
+@MainActor
+private final class NotReadyTransport: ReportTransport {
+    let device = MockReportTransport()
+    var failCompletion = false
+    var descriptor: DeviceDescriptor { device.descriptor }
+    func open() throws { try device.open() }
+    func close() { device.close() }
+    func send(_ report: [UInt8]) throws { try device.send(report) }
+    func receive(timeout: TimeInterval) throws -> [UInt8]? {
+        if failCompletion { throw NativeHIDTransport.error(kIOReturnNotReady, operation: "completion") }
+        return try device.receive(timeout: timeout)
+    }
 }
