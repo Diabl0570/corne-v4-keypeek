@@ -29,6 +29,8 @@ Path-filtered workflows can leave required checks pending. If these checks becom
 
 Each firmware job has a 15-minute limit. OS and Python dependency installation have separate five-minute limits, so a stalled setup fails with a specific step name. APT uses 30-second HTTP and HTTPS timeouts, two retries, and noninteractive installation. Recommended compiler packages remain enabled.
 
+The runner image [`ubuntu24/20261012.334`](https://github.com/actions/runner-images/blob/ubuntu24/20261012.334/images/ubuntu/scripts/build/configure-apt-sources.sh) gives the Azure HTTP mirror first priority through `/etc/apt/apt-mirrors.txt`. [Run 39972094361](https://github.com/Diabl0570/corne-v4-keypeek/actions/runs/39972094361) reached the five-minute setup limit while downloading the required GCC package from that mirror. The underlying cause is unknown. Setup now verifies that `ubuntu.sources` uses this mirror file, then replaces its contents with Ubuntu's main HTTPS archive. The package list, suites, components, and signature settings stay unchanged. If the runner changes its source layout, the guard fails before installation.
+
 A newer run of this workflow on the same Git ref cancels the older run. Manual runs on that same ref also share this concurrency group.
 
 The Python cache uses all four dependency inputs: `requirements-qmk.txt`, `requirements-qmk.lock`, `src/vial-kb/vial-qmk/requirements.txt`, and `src/qmk/qmk_firmware/requirements.txt`. Both upstream requirement files remain inputs even for a Vial-only build. Installation and `pip check` still run after a cache hit. APT packages, patched QMK source trees, and firmware build outputs are not cached.
