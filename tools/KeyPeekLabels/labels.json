@@ -1,0 +1,140 @@
+{
+  "vid": 18003,
+  "pid": 4,
+  "vial_uid": [
+    137,
+    54,
+    42,
+    199,
+    250,
+    216,
+    137,
+    69
+  ],
+  "rows": 8,
+  "cols": 7,
+  "layers": [
+    "Typing",
+    "Numbers",
+    "Symbols",
+    "Maintenance",
+    "Reserved 4",
+    "Reserved 5",
+    "Commands",
+    "OpenAI",
+    "Claude",
+    "Browser",
+    "Editor",
+    "Mouse",
+    "Review",
+    "Experiments",
+    "Spare",
+    "Picker"
+  ],
+  "keycodes": {
+    "32256": {
+      "text": "Home",
+      "target_layer": 0
+    },
+    "32257": {
+      "text": "Auto"
+    },
+    "32258": {
+      "text": "Mirror"
+    },
+    "32259": {
+      "text": "Space / Mirror",
+      "short": "Sp/Mir"
+    },
+    "32260": {
+      "text": "Typing",
+      "short": "Type",
+      "target_layer": 0
+    },
+    "32261": {
+      "text": "Numbers",
+      "short": "Nums",
+      "target_layer": 1
+    },
+    "32262": {
+      "text": "Symbols",
+      "short": "Sym",
+      "target_layer": 2
+    },
+    "32263": {
+      "text": "Maintenance",
+      "short": "Maint",
+      "target_layer": 3
+    },
+    "32264": {
+      "text": "Reserved 4",
+      "short": "Res4",
+      "target_layer": 4
+    },
+    "32265": {
+      "text": "Reserved 5",
+      "short": "Res5",
+      "target_layer": 5
+    },
+    "32266": {
+      "text": "Commands",
+      "short": "Cmds",
+      "target_layer": 6
+    },
+    "32267": {
+      "text": "OpenAI",
+      "short": "OpenAI",
+      "target_layer": 7
+    },
+    "32268": {
+      "text": "Claude",
+      "short": "Claude",
+      "target_layer": 8
+    },
+    "32269": {
+      "text": "Browser",
+      "short": "Browser",
+      "target_layer": 9
+    },
+    "32270": {
+      "text": "Editor",
+      "short": "Editor",
+      "target_layer": 10
+    },
+    "32271": {
+      "text": "Mouse",
+      "short": "Mouse",
+      "target_layer": 11
+    },
+    "32272": {
+      "text": "Review",
+      "short": "Review",
+      "target_layer": 12
+    },
+    "32273": {
+      "text": "Experiments",
+      "short": "Test",
+      "target_layer": 13
+    },
+    "32274": {
+      "text": "Spare",
+      "short": "Spare",
+      "target_layer": 14
+    },
+    "32275": {
+      "text": "Picker",
+      "short": "Picker",
+      "target_layer": 15
+    }
+  },
+  "positions": [
+    {
+      "row": 3,
+      "col": 3,
+      "label": {
+        "text": "Menu",
+        "target_layer": 15
+      }
+    }
+  ]
+}

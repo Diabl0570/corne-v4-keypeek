@@ -1,0 +1,784 @@
+From 48d2f11aadd47541adb624d925b5b5b2d2c09fe4 Mon Sep 17 00:00:00 2001
+From: Kasper Sprengers <diabl0570@hotmail.com>
+Date: Fri, 23 Oct 2026 11:36:25 +0200
+Subject: [PATCH] feat(labels): name Corne layers and menu actions
+
+---
+ README.md                           |   2 +
+ docs/label-profiles.md              |  30 +++
+ resources/corne-command-labels.json | 140 ++++++++++++++
+ src/keyboard.rs                     |  58 +++++-
+ src/keymap_editor/mod.rs            |   2 +-
+ src/label_profile.rs                | 285 ++++++++++++++++++++++++++++
+ src/main.rs                         |   1 +
+ src/overlay_window/ui_overlay.rs    |  17 +-
+ src/overlay_window/ui_settings.rs   |  22 ++-
+ src/protocols/mod.rs                |   4 +
+ src/protocols/vial.rs               |   8 +-
+ 11 files changed, 559 insertions(+), 10 deletions(-)
+ create mode 100644 docs/label-profiles.md
+ create mode 100644 resources/corne-command-labels.json
+ create mode 100644 src/label_profile.rs
+
+diff --git a/README.md b/README.md
+index 7bd1b1a..7ae4e70 100644
+--- a/README.md
++++ b/README.md
+@@ -7,6 +7,8 @@ KeyPeek provides a live on-screen overlay with an integrated keymap editor for y
+ 
+ <img src=".github/assets/demo.gif" alt="KeyPeek in action">
+ 
++This local build also supports [device-specific layer and key labels](docs/label-profiles.md).
++
+ ## Setup
+ 
+ KeyPeek requires a small firmware module because stock QMK/Vial/ZMK firmware does not expose live layer-change events.
+diff --git a/docs/label-profiles.md b/docs/label-profiles.md
+new file mode 100644
+index 0000000..96497c3
+--- /dev/null
++++ b/docs/label-profiles.md
+@@ -0,0 +1,30 @@
++# Device label profiles
++
++This local KeyPeek build can name layers and custom keys using a `labels.json` file next to `settings.ini`. Labels affect the overlay and layer names in the editor and settings. They do not change the keyboard's bindings or firmware.
++
++On macOS the file belongs at:
++
++```text
++~/Library/Application Support/dev.srwi.KeyPeek/labels.json
++```
++
++Copy `resources/corne-command-labels.json` there and restart KeyPeek. That profile matches the Corne command firmware's VID, PID, Vial UID, 8×7 matrix and 16 layers. A different identity or layer count keeps the ordinary KeyPeek labels. An invalid profile is ignored and reported on standard error. Keep any existing profile as a backup before replacing it.
++
++The overlay shows the active layer above the keys, for example `OpenAI · L7`, `Browser · L9` or `Picker · L15`. When the keymap editor previews a layer, the heading follows that preview. The heading names the layer; it does not indicate whether Auto Command is enabled. Layer 0 is called Typing, so Raycast can show Typing while Auto remains armed. The Home key still exits command mode.
++
++The included profile names the physical Menu key and the command firmware's custom actions:
++
++| Action | Display |
++| --- | --- |
++| Physical matrix row 3, column 3 | Menu |
++| `0x7e00` | Home |
++| `0x7e01` | Auto |
++| `0x7e02` | Mirror |
++| `0x7e03` | Space / Mirror |
++| `0x7e04` through `0x7e13` | Typing, Numbers, Symbols, Maintenance, Reserved 4, Reserved 5, Commands, OpenAI, Claude, Browser, Editor, Mouse, Review, Experiments, Spare, Picker |
++
++To change a name, edit `text` in the relevant entry. `short` is an optional compact label used when the key is small. `target_layer` is optional and supplies the destination layer's color. The keycode keys in JSON use decimal numbers; for example `32257` is `0x7e01` (Auto). Code labels follow their binding when you move it in Vial. Position labels remain at their specified matrix coordinates, which is appropriate for the Menu key intercepted by this firmware. Positions can optionally include `layer` to restrict a label to one layer.
++
++The layer names are an ordered list starting at layer 0. The number of names must match the keyboard's layer count. Layer names, text labels and position coordinates are validated when KeyPeek connects. Changes to the file take effect after restarting KeyPeek.
++
++To undo the labels, rename or remove `labels.json` and restart KeyPeek. Your saved `settings.ini`, home-row modifiers and actual key assignments stay intact. A stock KeyPeek update will require this local patch to be rebuilt; the profile file alone does not add this feature to stock 0.10.0.
+diff --git a/resources/corne-command-labels.json b/resources/corne-command-labels.json
+new file mode 100644
+index 0000000..b77dd60
+--- /dev/null
++++ b/resources/corne-command-labels.json
+@@ -0,0 +1,140 @@
++{
++  "vid": 18003,
++  "pid": 4,
++  "vial_uid": [
++    137,
++    54,
++    42,
++    199,
++    250,
++    216,
++    137,
++    69
++  ],
++  "rows": 8,
++  "cols": 7,
++  "layers": [
++    "Typing",
++    "Numbers",
++    "Symbols",
++    "Maintenance",
++    "Reserved 4",
++    "Reserved 5",
++    "Commands",
++    "OpenAI",
++    "Claude",
++    "Browser",
++    "Editor",
++    "Mouse",
++    "Review",
++    "Experiments",
++    "Spare",
++    "Picker"
++  ],
++  "keycodes": {
++    "32256": {
++      "text": "Home",
++      "target_layer": 0
++    },
++    "32257": {
++      "text": "Auto"
++    },
++    "32258": {
++      "text": "Mirror"
++    },
++    "32259": {
++      "text": "Space / Mirror",
++      "short": "Sp/Mir"
++    },
++    "32260": {
++      "text": "Typing",
++      "short": "Type",
++      "target_layer": 0
++    },
++    "32261": {
++      "text": "Numbers",
++      "short": "Nums",
++      "target_layer": 1
++    },
++    "32262": {
++      "text": "Symbols",
++      "short": "Sym",
++      "target_layer": 2
++    },
++    "32263": {
++      "text": "Maintenance",
++      "short": "Maint",
++      "target_layer": 3
++    },
++    "32264": {
++      "text": "Reserved 4",
++      "short": "Res4",
++      "target_layer": 4
++    },
++    "32265": {
++      "text": "Reserved 5",
++      "short": "Res5",
++      "target_layer": 5
++    },
++    "32266": {
++      "text": "Commands",
++      "short": "Cmds",
++      "target_layer": 6
++    },
++    "32267": {
++      "text": "OpenAI",
++      "short": "OpenAI",
++      "target_layer": 7
++    },
++    "32268": {
++      "text": "Claude",
++      "short": "Claude",
++      "target_layer": 8
++    },
++    "32269": {
++      "text": "Browser",
++      "short": "Browser",
++      "target_layer": 9
++    },
++    "32270": {
++      "text": "Editor",
++      "short": "Editor",
++      "target_layer": 10
++    },
++    "32271": {
++      "text": "Mouse",
++      "short": "Mouse",
++      "target_layer": 11
++    },
++    "32272": {
++      "text": "Review",
++      "short": "Review",
++      "target_layer": 12
++    },
++    "32273": {
++      "text": "Experiments",
++      "short": "Test",
++      "target_layer": 13
++    },
++    "32274": {
++      "text": "Spare",
++      "short": "Spare",
++      "target_layer": 14
++    },
++    "32275": {
++      "text": "Picker",
++      "short": "Picker",
++      "target_layer": 15
++    }
++  },
++  "positions": [
++    {
++      "row": 3,
++      "col": 3,
++      "label": {
++        "text": "Menu",
++        "target_layer": 15
++      }
++    }
++  ]
++}
+diff --git a/src/keyboard.rs b/src/keyboard.rs
+index 5354de4..6440a52 100644
+--- a/src/keyboard.rs
++++ b/src/keyboard.rs
+@@ -6,6 +6,7 @@ use std::time::{Duration, Instant};
+ 
+ use crate::key_action::KeyAction;
+ use crate::key_matrix::{BoundKey, KeyMatrix};
++use crate::label_profile::LabelProfile;
+ use crate::layout_key::LayoutKey;
+ use crate::protocols::{DeviceLocked, KeyboardLayout, KeyboardProtocol, WriteSupport};
+ use crate::ui_wake::UiWake;
+@@ -18,6 +19,13 @@ const LAYER_STATE_PACKET: u8 = 0xff;
+ /// Leading byte of a key event packet, followed by `row`, `col`, `pressed`.
+ const KEY_EVENT_PACKET: u8 = 0xF1;
+ 
++fn highest_active_layer(active: u32, layer_count: usize) -> usize {
++    (0..layer_count.min(32))
++        .rev()
++        .find(|layer| active & (1 << layer) != 0)
++        .unwrap_or(0)
++}
++
+ /// A `0xff`-led packet is only a real layer-state packet when its size field is
+ /// `sizeof(layer_state_t)` and both bitmasks fit; firmware without this module
+ /// echoes other packets with the same leading byte.
+@@ -147,6 +155,7 @@ pub struct Keyboard {
+     write_support: WriteSupport,
+     _keepalive: Option<mpsc::Sender<()>>,
+     action_filter: Option<crate::protocols::ActionFilter>,
++    label_profile: Option<LabelProfile>,
+ }
+ 
+ /// A keymap command for the protocol, executed on the reader thread so writes
+@@ -257,6 +266,8 @@ impl Keyboard {
+         let snapshot = protocol
+             .read_keymap()
+             .map_err(|e| format!("Failed to read keymap: {e}"))?;
++        let label_profile =
++            LabelProfile::load_for(definition, protocol.vial_uid(), snapshot.layers.len());
+         // Kept outside the matrix so command execution can resolve labels for
+         // freshly written actions without locking it.
+         let layer_names: Vec<String> = snapshot
+@@ -307,6 +318,7 @@ impl Keyboard {
+             write_support,
+             _keepalive: keepalive,
+             action_filter,
++            label_profile,
+         };
+ 
+         let layer_state_clone = Arc::clone(&keyboard.layer_state);
+@@ -470,7 +482,41 @@ impl Keyboard {
+     }
+ 
+     pub fn layer_infos(&self) -> Vec<crate::key_action::LayerInfo> {
+-        self.matrix.lock().unwrap().layer_infos().to_vec()
++        let layers = self.matrix.lock().unwrap().layer_infos().to_vec();
++        match &self.label_profile {
++            Some(profile) => profile.layer_infos(layers),
++            None => layers,
++        }
++    }
++
++    pub fn display_key(&self, layer: usize, row: usize, col: usize) -> Option<LayoutKey> {
++        let matrix = self.matrix.lock().unwrap();
++        let original = matrix.get_key(layer, row, col).cloned();
++        match &self.label_profile {
++            Some(profile) => profile.display_key(
++                layer,
++                row,
++                col,
++                matrix.get_action(layer, row, col),
++                original,
++            ),
++            None => original,
++        }
++    }
++
++    pub fn named_layer_heading(&self, pinned: Option<usize>) -> Option<(usize, String)> {
++        let layers = self.layer_infos();
++        let layer = pinned.unwrap_or_else(|| {
++            let active =
++                *self.layer_state.lock().unwrap() | *self.default_layer_state.lock().unwrap();
++            highest_active_layer(active, layers.len())
++        });
++        let name = layers
++            .get(layer)?
++            .name
++            .as_ref()
++            .filter(|name| !name.is_empty())?;
++        Some((layer, name.clone()))
+     }
+ 
+     pub fn get_action(
+@@ -612,6 +658,16 @@ mod tests {
+         visible_layers: u32::MAX,
+     };
+ 
++    #[test]
++    fn layer_heading_follows_picker_app_and_home_without_claiming_a_mode() {
++        assert_eq!(highest_active_layer((1 << 15) | (1 << 7) | 1, 16), 15);
++        assert_eq!(highest_active_layer((1 << 9) | 1, 16), 9);
++        assert_eq!(highest_active_layer((1 << 7) | 1, 16), 7);
++        assert_eq!(highest_active_layer(1, 16), 0);
++        assert_eq!(highest_active_layer(0, 16), 0);
++        assert_eq!(highest_active_layer((1 << 31) | 1, 16), 0);
++    }
++
+     /// Walks the layer-state transitions the activation delay has to survive.
+     #[test]
+     fn activation_delay_gates_the_overlay() {
+diff --git a/src/keymap_editor/mod.rs b/src/keymap_editor/mod.rs
+index 19bd09a..1f32d1a 100644
+--- a/src/keymap_editor/mod.rs
++++ b/src/keymap_editor/mod.rs
+@@ -425,7 +425,7 @@ impl EditorState {
+         let button_width = ((ui.available_width() - total_spacing) / layer_count as f32).max(24.0);
+ 
+         ui.push_id("layer_switcher", |ui| {
+-            ui.horizontal(|ui| {
++            ui.horizontal_wrapped(|ui| {
+                 for (i, info) in layer_infos.iter().enumerate() {
+                     let label = info.short_name(i);
+                     let is_selected = target.layer_index == i;
+diff --git a/src/label_profile.rs b/src/label_profile.rs
+new file mode 100644
+index 0000000..5a292da
+--- /dev/null
++++ b/src/label_profile.rs
+@@ -0,0 +1,285 @@
++use crate::key_action::{KeyAction, LayerInfo};
++use crate::layout_key::{BorderStyle, KeycodeKind, Label, LayoutKey};
++use crate::protocols::KeyboardDefinition;
++use directories::ProjectDirs;
++use serde::Deserialize;
++use std::collections::BTreeMap;
++use std::io::ErrorKind;
++
++#[derive(Debug, Deserialize)]
++#[serde(deny_unknown_fields)]
++pub struct LabelProfile {
++    vid: u16,
++    pid: u16,
++    vial_uid: [u8; 8],
++    rows: usize,
++    cols: usize,
++    layers: Vec<String>,
++    #[serde(default)]
++    keycodes: BTreeMap<u16, DisplayLabel>,
++    #[serde(default)]
++    positions: Vec<PositionLabel>,
++}
++
++#[derive(Debug, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct DisplayLabel {
++    text: String,
++    short: Option<String>,
++    target_layer: Option<u8>,
++}
++
++#[derive(Debug, Deserialize)]
++#[serde(deny_unknown_fields)]
++struct PositionLabel {
++    row: usize,
++    col: usize,
++    layer: Option<usize>,
++    label: DisplayLabel,
++}
++
++impl DisplayLabel {
++    fn validate(&self, layer_count: usize) -> bool {
++        !self.text.trim().is_empty()
++            && self
++                .target_layer
++                .is_none_or(|layer| (layer as usize) < layer_count)
++    }
++
++    fn layout_key(&self) -> LayoutKey {
++        LayoutKey {
++            tap: Label {
++                full: self.text.clone(),
++                short: self.short.clone(),
++            },
++            kind: KeycodeKind::Special,
++            layer_ref: self.target_layer,
++            border: if self.target_layer.is_some() {
++                BorderStyle::Solid
++            } else {
++                BorderStyle::None
++            },
++            ..Default::default()
++        }
++    }
++}
++
++impl LabelProfile {
++    pub fn load_for(
++        definition: &KeyboardDefinition,
++        vial_uid: Option<[u8; 8]>,
++        layer_count: usize,
++    ) -> Option<Self> {
++        let path = ProjectDirs::from("dev", "srwi", "KeyPeek")?
++            .config_dir()
++            .join("labels.json");
++        let text = match std::fs::read_to_string(&path) {
++            Ok(text) => text,
++            Err(error) if error.kind() == ErrorKind::NotFound => return None,
++            Err(error) => {
++                eprintln!("Could not read label profile {}: {error}", path.display());
++                return None;
++            }
++        };
++        match Self::parse(&text) {
++            Ok(profile) => profile
++                .matches(definition, vial_uid, layer_count)
++                .then_some(profile),
++            Err(error) => {
++                eprintln!("Invalid label profile {}: {error}", path.display());
++                None
++            }
++        }
++    }
++
++    fn parse(text: &str) -> Result<Self, String> {
++        let profile: Self = serde_json::from_str(text).map_err(|e| e.to_string())?;
++        let layer_count = profile.layers.len();
++        if profile.rows == 0
++            || profile.cols == 0
++            || !(1..=32).contains(&layer_count)
++            || profile.layers.iter().any(|name| name.trim().is_empty())
++            || profile
++                .keycodes
++                .values()
++                .any(|label| !label.validate(layer_count))
++            || profile.positions.iter().any(|position| {
++                position.row >= profile.rows
++                    || position.col >= profile.cols
++                    || position.layer.is_some_and(|layer| layer >= layer_count)
++                    || !position.label.validate(layer_count)
++            })
++        {
++            return Err("Labels must have names and valid matrix/layer coordinates".into());
++        }
++        Ok(profile)
++    }
++
++    fn matches(
++        &self,
++        definition: &KeyboardDefinition,
++        vial_uid: Option<[u8; 8]>,
++        layer_count: usize,
++    ) -> bool {
++        definition.vid == self.vid
++            && definition.pid == self.pid
++            && vial_uid == Some(self.vial_uid)
++            && definition.rows == self.rows
++            && definition.cols == self.cols
++            && layer_count == self.layers.len()
++    }
++
++    pub fn layer_infos(&self, mut layers: Vec<LayerInfo>) -> Vec<LayerInfo> {
++        for (layer, name) in layers.iter_mut().zip(&self.layers) {
++            layer.name = Some(name.clone());
++        }
++        layers
++    }
++
++    pub fn display_key(
++        &self,
++        layer: usize,
++        row: usize,
++        col: usize,
++        action: Option<&KeyAction>,
++        original: Option<LayoutKey>,
++    ) -> Option<LayoutKey> {
++        let Some(KeyAction::Qmk(code)) = action else {
++            return original;
++        };
++        let label = self
++            .positions
++            .iter()
++            .find(|position| {
++                position.row == row
++                    && position.col == col
++                    && position.layer.is_none_or(|index| index == layer)
++            })
++            .map(|position| &position.label)
++            .or_else(|| self.keycodes.get(code));
++        label.map(DisplayLabel::layout_key).or(original)
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::*;
++    use crate::key_action::KeymapSnapshot;
++    use crate::key_matrix::KeyMatrix;
++
++    const PROFILE: &str = include_str!("../resources/corne-command-labels.json");
++
++    fn definition() -> KeyboardDefinition {
++        KeyboardDefinition {
++            vid: 0x4653,
++            pid: 0x0004,
++            rows: 8,
++            cols: 7,
++            layouts: vec![],
++        }
++    }
++
++    #[test]
++    fn labels_require_the_matching_device_uid_and_keymap_shape() {
++        let profile = LabelProfile::parse(PROFILE).unwrap();
++        let definition = definition();
++        let uid = Some([0x89, 0x36, 0x2a, 0xc7, 0xfa, 0xd8, 0x89, 0x45]);
++        assert!(profile.matches(&definition, uid, 16));
++        assert!(!profile.matches(&definition, None, 16));
++        assert!(!profile.matches(&definition, Some([0; 8]), 16));
++        assert!(!profile.matches(&definition, uid, 6));
++        assert!(!profile.matches(
++            &KeyboardDefinition {
++                pid: 5,
++                ..definition.clone()
++            },
++            uid,
++            16
++        ));
++        assert!(!profile.matches(
++            &KeyboardDefinition {
++                rows: 10,
++                ..definition
++            },
++            uid,
++            16
++        ));
++    }
++
++    #[test]
++    fn picker_and_control_labels_follow_the_custom_code() {
++        let profile = LabelProfile::parse(PROFILE).unwrap();
++        for (code, expected) in [
++            (0x7e00, "Home"),
++            (0x7e01, "Auto"),
++            (0x7e02, "Mirror"),
++            (0x7e0b, "OpenAI"),
++            (0x7e0d, "Browser"),
++        ] {
++            let action = KeyAction::Qmk(code);
++            let label = profile
++                .display_key(15, 1, 1, Some(&action), action.resolve_label(&[]))
++                .unwrap();
++            assert_eq!(label.tap.full, expected);
++        }
++        let moved = KeyAction::Qmk(0x0004);
++        let label = profile
++            .display_key(15, 1, 1, Some(&moved), moved.resolve_label(&[]))
++            .unwrap();
++        assert_eq!(label.tap.full, "A");
++    }
++
++    #[test]
++    fn menu_presentation_does_not_change_actions_or_transparency() {
++        let profile = LabelProfile::parse(PROFILE).unwrap();
++        let mut actions = vec![vec![vec![None; 7]; 8]; 16];
++        actions[15][3][3] = Some(KeyAction::Qmk(1));
++        let matrix = KeyMatrix::from_snapshot(
++            KeymapSnapshot {
++                layers: LayerInfo::indexed(16),
++                actions,
++            },
++            8,
++            7,
++        );
++        assert!(matrix.is_transparent(15, 3, 3));
++        let displayed = profile
++            .display_key(
++                15,
++                3,
++                3,
++                matrix.get_action(15, 3, 3),
++                matrix.get_key(15, 3, 3).cloned(),
++            )
++            .unwrap();
++        assert_eq!(displayed.tap.full, "Menu");
++        assert!(matrix.is_transparent(15, 3, 3));
++        assert_eq!(matrix.get_action(15, 3, 3), Some(&KeyAction::Qmk(1)));
++        assert!(profile.display_key(0, 3, 3, None, None).is_none());
++    }
++
++    #[test]
++    fn ordinary_home_row_mods_keep_their_hold_information() {
++        let profile = LabelProfile::parse(PROFILE).unwrap();
++        let action = KeyAction::Qmk(0x2804);
++        let original = action.resolve_label(&[]);
++        assert_eq!(
++            profile.display_key(7, 1, 1, Some(&action), original.clone()),
++            original
++        );
++    }
++
++    #[test]
++    fn layer_names_keep_firmware_ids_and_reject_invalid_profiles() {
++        let profile = LabelProfile::parse(PROFILE).unwrap();
++        let layers = profile.layer_infos(LayerInfo::indexed(16));
++        assert_eq!(layers[7].id, 7);
++        assert_eq!(layers[7].name.as_deref(), Some("OpenAI"));
++        assert_eq!(layers[9].name.as_deref(), Some("Browser"));
++        assert!(LabelProfile::parse(&PROFILE.replace("\"row\": 3", "\"row\": 8")).is_err());
++        assert!(LabelProfile::parse(
++            &PROFILE.replace("\"target_layer\": 15", "\"target_layer\": 16")
++        )
++        .is_err());
++    }
++}
+diff --git a/src/main.rs b/src/main.rs
+index 04c6021..eecae2d 100644
+--- a/src/main.rs
++++ b/src/main.rs
+@@ -7,6 +7,7 @@ mod key_matrix;
+ mod key_paint;
+ mod keyboard;
+ mod keymap_editor;
++mod label_profile;
+ mod layout_key;
+ mod os_layout;
+ mod overlay_window;
+diff --git a/src/overlay_window/ui_overlay.rs b/src/overlay_window/ui_overlay.rs
+index 27cf2e2..4d98f29 100644
+--- a/src/overlay_window/ui_overlay.rs
++++ b/src/overlay_window/ui_overlay.rs
+@@ -35,6 +35,21 @@ impl OverlayApp {
+             .show(ctx, |ui| {
+                 let layout = keyboard.layout();
+                 let layout_size = layout.get_dimensions();
++                if let Some((layer, name)) = keyboard.named_layer_heading(pinned) {
++                    let text = format!("{name} · L{layer}");
++                    let colors = style.colors_for(layer as u8, KeycodeKind::Special, false, false);
++                    let font = egui::FontId::proportional((size * 0.3).max(12.0));
++                    let galley = ui.painter().layout_no_wrap(text, font, colors.font);
++                    let (_, rect) =
++                        ui.allocate_space(egui::vec2(layout_size.0 * size, galley.size().y + 12.0));
++                    let badge = egui::Rect::from_center_size(
++                        rect.center(),
++                        galley.size() + egui::vec2(20.0, 8.0),
++                    );
++                    ui.painter().rect_filled(badge, 5.0, colors.fill);
++                    ui.painter()
++                        .galley(badge.center() - galley.size() * 0.5, galley, colors.font);
++                }
+                 let overlay_space =
+                     ui.allocate_space(egui::vec2(layout_size.0 * size, layout_size.1 * size));
+                 let overlay_rect = overlay_space.1;
+@@ -75,7 +90,7 @@ impl OverlayApp {
+                             .is_none();
+ 
+                     let layout_key = keyboard
+-                        .get_key(effective_layer as usize, key.row, key.col)
++                        .display_key(effective_layer as usize, key.row, key.col)
+                         .unwrap_or_default();
+ 
+                     let first_layer_key_kind = keyboard
+diff --git a/src/overlay_window/ui_settings.rs b/src/overlay_window/ui_settings.rs
+index ec392cc..1bfddca 100644
+--- a/src/overlay_window/ui_settings.rs
++++ b/src/overlay_window/ui_settings.rs
+@@ -329,10 +329,20 @@ impl OverlayApp {
+                 });
+ 
+                 titled_group(ui, "Theme", |ui| {
+-                    const LAYER_LABELS: [&str; ThemeSettings::OTHER_LAYERS as usize] = [
+-                        "Layer 0", "Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5",
+-                    ];
+-                    const HALF: usize = LAYER_LABELS.len() / 2;
++                    const LAYER_COUNT: usize = ThemeSettings::OTHER_LAYERS as usize;
++                    const HALF: usize = LAYER_COUNT / 2;
++                    let layers = match &self.session.connection {
++                        AppConnectionState::Connected { keyboard } => keyboard.layer_infos(),
++                        _ => Vec::new(),
++                    };
++                    let layer_labels: Vec<String> = (0..LAYER_COUNT)
++                        .map(|index| {
++                            match layers.get(index).and_then(|layer| layer.name.as_ref()) {
++                                Some(name) if !name.is_empty() => format!("{name} (L{index})"),
++                                _ => format!("Layer {index}"),
++                            }
++                        })
++                        .collect();
+ 
+                     let draft = &mut self.settings.draft;
+ 
+@@ -340,7 +350,7 @@ impl OverlayApp {
+                         let (label, mask) = if layer == ThemeSettings::OTHER_LAYERS as usize {
+                             ("Other layers", !0 << layer)
+                         } else {
+-                            (LAYER_LABELS[layer], 1 << layer)
++                            (layer_labels[layer].as_str(), 1 << layer)
+                         };
+                         Self::theme_layer_entry(
+                             ui,
+@@ -358,7 +368,7 @@ impl OverlayApp {
+                             }
+                         });
+                         columns[1].vertical(|ui| {
+-                            for layer in HALF..LAYER_LABELS.len() {
++                            for layer in HALF..LAYER_COUNT {
+                                 layer_row(ui, layer);
+                             }
+                             layer_row(ui, ThemeSettings::OTHER_LAYERS as usize);
+diff --git a/src/protocols/mod.rs b/src/protocols/mod.rs
+index 2eda422..506d07e 100644
+--- a/src/protocols/mod.rs
++++ b/src/protocols/mod.rs
+@@ -92,6 +92,10 @@ pub enum WriteSupport {
+ pub trait KeyboardProtocol: Send {
+     fn get_layout_definition(&self) -> &KeyboardDefinition;
+ 
++    fn vial_uid(&self) -> Option<[u8; 8]> {
++        None
++    }
++
+     fn read_keymap(&self) -> Result<crate::key_action::KeymapSnapshot, Box<dyn Error>>;
+ 
+     fn hid_read(&self) -> Result<Vec<u8>, Box<dyn Error>>;
+diff --git a/src/protocols/vial.rs b/src/protocols/vial.rs
+index 9863ad5..eb6797d 100644
+--- a/src/protocols/vial.rs
++++ b/src/protocols/vial.rs
+@@ -20,6 +20,7 @@ pub struct VialProtocol {
+     api: KeyboardApi,
+     definition: KeyboardDefinition,
+     features: QmkFeatures,
++    uid: [u8; 8],
+ }
+ 
+ impl VialProtocol {
+@@ -33,7 +34,7 @@ impl VialProtocol {
+     }
+ 
+     fn init_from_api(api: KeyboardApi, vid: u16, pid: u16) -> Result<Self, Box<dyn Error>> {
+-        let (protocol_version, _keyboard_uid) = Self::get_keyboard_id(&api)?;
++        let (protocol_version, uid) = Self::get_keyboard_id(&api)?;
+ 
+         if protocol_version == 0 {
+             return Err("Device does not support VIAL protocol".into());
+@@ -46,6 +47,7 @@ impl VialProtocol {
+             api,
+             definition,
+             features,
++            uid,
+         })
+     }
+ 
+@@ -146,6 +148,10 @@ impl KeyboardProtocol for VialProtocol {
+         &self.definition
+     }
+ 
++    fn vial_uid(&self) -> Option<[u8; 8]> {
++        Some(self.uid)
++    }
++
+     fn read_keymap(&self) -> Result<KeymapSnapshot, Box<dyn Error>> {
+         qmk_read_snapshot(&self.api, &self.definition)
+     }
+-- 
+2.50.1 (Apple Git-155)
+
