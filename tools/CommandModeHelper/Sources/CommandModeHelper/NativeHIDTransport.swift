@@ -142,7 +142,7 @@ final class NativeHIDTransport: ReportTransport {
         switch code {
         case kIOReturnNotPermitted, kIOReturnNotPrivileged: .permissionDenied(code)
         case kIOReturnTimeout, kIOReturnNoDevice, kIOReturnNotResponding, kIOReturnOffline,
-             kIOReturnNotOpen, kIOReturnBusy, kIOReturnExclusiveAccess:
+             kIOReturnNotOpen, kIOReturnBusy, kIOReturnExclusiveAccess, kIOReturnNotReady:
             .hidUnavailable(operation: operation, code: code)
         default: .hidFailure(operation: operation, code: code)
         }
