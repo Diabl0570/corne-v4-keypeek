@@ -103,6 +103,19 @@ struct CommandModeCoreTests {
         }
     }
 
+    @Test func preRaycastRegistryCannotOpenSession() {
+        let mock = MockReportTransport()
+        mock.transformReply = { reply in
+            var old = reply
+            old.write(0x36FE6906, at: 20)
+            return [old]
+        }
+        expectError(.incompatibleCapabilities) { try client(mock).start() }
+        #expect(mock.outputReports.map { $0[3] } == [Opcode.capabilities.rawValue])
+        #expect(mock.session == 0)
+        #expect(!mock.isOpen)
+    }
+
     @Test func exactFrameSizeAndVersionRequired() {
         for mutation in 0..<4 {
             let mock = MockReportTransport()
@@ -157,19 +170,79 @@ struct CommandModeCoreTests {
             ("com.openai.codex", 7), ("com.anthropic.claudefordesktop", 8),
             ("com.google.Chrome", 9), ("com.openai.atlas", 9), ("com.apple.Safari", 9),
             ("com.microsoft.edgemac", 9), ("com.todesktop.230313mzl4w4u92", 10),
-            ("com.microsoft.VSCode", 10), ("unknown.app", 6),
+            ("com.microsoft.VSCode", 10), ("com.raycast.macos", 0), ("unknown.app", 6),
         ]
         for (bundle, expected) in cases {
             client.observe(bundleID: bundle)
             #expect(client.desiredLayer == expected)
         }
         client.observe(bundleID: "com.openai.codex")
-        for bundle in ["com.raycast.macos", "dev.srwi.keypeek"] {
+        for bundle in ["dev.srwi.keypeek", "com.apple.dock"] {
             client.observe(bundleID: bundle)
             #expect(client.desiredLayer == 7)
         }
         client.observe(bundleID: nil)
         #expect(client.desiredLayer == 7)
+        #expect((UInt8(0)...15).filter(CommandRegistry.allowsAutomaticLayer) == [0, 6, 7, 8, 9, 10])
+        #expect(!CommandRegistry.allowsAutomaticLayer(255))
+    }
+
+    @Test func raycastTypesAndReturnsToAppWithoutDisarmingAuto() throws {
+        let mock = MockReportTransport()
+        let client = client(mock)
+        try client.start()
+        mock.keyboardSelect(mode: .auto, layer: 7)
+        let epoch = mock.epoch
+        for (bundle, layer) in [("com.openai.codex", UInt8(7)), ("com.raycast.macos", 0),
+                                ("com.anthropic.claudefordesktop", 8)] {
+            client.observe(bundleID: bundle)
+            try client.poll()
+            #expect(mock.selectedLayer == layer)
+            #expect(client.lastAcknowledgedLayer == layer)
+            #expect(mock.mode == .auto)
+            #expect(mock.epoch == epoch)
+            #expect(client.state?.appliedMask == (layer == 0 ? 0 : UInt16(1) << layer))
+        }
+        #expect(contextReports(mock).map { $0[20] } == [7, 0, 8])
+    }
+
+    @Test func raycastEntryAndExitWaitForKeyRelease() throws {
+        let mock = MockReportTransport()
+        let client = client(mock)
+        try client.start()
+        mock.keyboardSelect(mode: .auto, layer: 7)
+        for (bundle, before, after) in [("com.raycast.macos", UInt8(7), UInt8(0)),
+                                       ("com.openai.codex", 0, 7)] {
+            mock.keysHeld = true
+            client.observe(bundleID: bundle)
+            try client.poll()
+            #expect(mock.selectedLayer == before)
+            #expect(client.state?.deferred == true)
+            mock.keysHeld = false
+            try client.poll()
+            #expect(mock.selectedLayer == after)
+            #expect(client.state?.deferred == false)
+            #expect(mock.mode == .auto)
+        }
+    }
+
+    @Test func homeAndRestartDuringRaycastCannotRestoreCommandMode() throws {
+        for home in [true, false] {
+            let mock = MockReportTransport()
+            let client = client(mock)
+            try client.start()
+            mock.keyboardSelect(mode: .auto, layer: 7)
+            client.observe(bundleID: "com.raycast.macos")
+            try client.poll()
+            if home { mock.keyboardSelect(mode: .typing, layer: 0) }
+            else { client.pause(); try client.start() }
+            let count = contextReports(mock).count
+            client.observe(bundleID: "com.openai.codex")
+            try client.poll()
+            #expect(mock.mode == .typing)
+            #expect(mock.selectedLayer == 0)
+            #expect(contextReports(mock).count == count)
+        }
     }
 
     @Test func autoSendsOnlyNewestContextAndReadsItBack() throws {

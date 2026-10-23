@@ -51,12 +51,14 @@ class AssetTests(unittest.TestCase):
                 assets.verify_presets(self.source, changed, experiment)
 
     def test_invalid_registry_or_capture_rejected_before_writing(self):
-        for kind in ('selector','bundle','layer','matrix'):
+        for kind in ('selector','bundle','layer','matrix','automatic','transient'):
             registry = copy.deepcopy(self.registry)
             source = copy.deepcopy(self.source)
             if kind == 'selector': registry['layers'][1]['selector'] = [0,0]
             elif kind == 'bundle': registry['layers'][8]['bundle_ids'] = ['com.openai.codex']
             elif kind == 'layer': registry['layers'][15]['id'] = 16
+            elif kind == 'automatic': registry['layers'][1]['automatic'] = True
+            elif kind == 'transient': registry['transient_bundle_ids'].append('com.raycast.macos')
             else: source['layout'][0][0].pop()
             with tempfile.TemporaryDirectory() as temporary:
                 base = Path(temporary)
@@ -85,6 +87,10 @@ class AssetTests(unittest.TestCase):
             self.assertEqual(int(match.group(1), 16), 0x7E00+number)
         matching = [x for x in self.registry['layers'] if 'com.openai.codex' in x.get('bundle_ids',[])]
         self.assertEqual([x['id'] for x in matching], [7])
+        raycast = [x for x in self.registry['layers'] if 'com.raycast.macos' in x.get('bundle_ids', [])]
+        self.assertEqual([x['id'] for x in raycast], [0])
+        self.assertTrue(raycast[0]['automatic'])
+        self.assertNotIn('com.raycast.macos', self.registry['transient_bundle_ids'])
 
 
 if __name__ == '__main__':

@@ -190,6 +190,52 @@ static void protocol_traces(void) {
     puts("PASS wire: exact capability bytes, idempotent retry, stale ACK invalidation, padding/version/length rejection, configurator quiet period");
 }
 
+static void raycast_typing_traces(void) {
+    cm_state_t s;
+    cm_init(&s); cm_open(&s, 123, 1);
+    assert(cm_context(&s, 123, s.epoch, 1, 0, 2, true) == CM_DISARMED);
+    cm_auto(&s); assert(s.selection.layer == CM_GENERIC_LAYER);
+    assert(cm_context(&s, 123, s.epoch, 1, 7, 3, true) == CM_OK);
+    uint32_t epoch = s.epoch;
+    assert(cm_context(&s, 123, epoch, 2, 0, 4, false) == CM_DEFERRED);
+    cm_tick(&s, 5, false); assert(s.selection.layer == 7);
+    cm_tick(&s, 6, true); assert(s.selection.layer == 0 && s.selection.mode == CM_AUTOMATIC && cm_layer_mask(&s) == 0);
+    cm_control(&s, false, true); assert(cm_layer_mask(&s) == 4);
+    cm_control(&s, false, false); assert(cm_layer_mask(&s) == 0);
+    assert(cm_context(&s, 123, epoch, 3, 8, 7, false) == CM_DEFERRED);
+    cm_tick(&s, 8, true); assert(s.selection.layer == 8 && s.selection.mode == CM_AUTOMATIC && s.epoch == epoch);
+    for (uint8_t layer = 1; layer < 16; ++layer) {
+        if (layer >= 6 && layer <= 10) continue;
+        assert(cm_context(&s, 123, epoch, 4, layer, 9, true) == CM_INVALID_LAYER);
+    }
+    assert(cm_context(&s, 123, epoch, 4, 255, 9, true) == CM_INVALID_LAYER);
+    assert(cm_context(&s, 123, epoch, 4, 0, 10, true) == CM_OK);
+    cm_home(&s);
+    assert(cm_context(&s, 123, epoch, 5, 7, 11, true) == CM_STALE_EPOCH);
+    assert(cm_context(&s, 123, s.epoch, 5, 7, 11, true) == CM_DISARMED);
+    for (unsigned reason = 0; reason < 8; ++reason) {
+        cm_init(&s); cm_open(&s, 123, 1); cm_auto(&s);
+        assert(cm_context(&s, 123, s.epoch, 1, 0, 2, true) == CM_OK);
+        cm_menu(&s, true, 3); cm_tick(&s, 203, true);
+        assert(s.picker && s.picker_parent.mode == CM_AUTOMATIC && s.picker_parent.layer == 0);
+        if (reason == 0) cm_close(&s, 123);
+        else if (reason == 1) cm_session_lost(&s);
+        else if (reason == 2) cm_configuration(&s, 204);
+        else if (reason == 3) cm_open(&s, 456, 204);
+        else if (reason == 4) cm_tick(&s, 2204, true);
+        else if (reason == 5) { s.epoch = UINT32_MAX; cm_menu(&s, false, 204); }
+        else if (reason == 6) { s.revision = UINT32_MAX; cm_control(&s, true, false); }
+        else {
+            s.sequence = UINT32_MAX;
+            assert(cm_context(&s, 123, s.epoch, 2, 0, 204, true) == CM_STALE_SEQUENCE);
+        }
+        assert(s.selection.mode == CM_TYPING && s.picker_parent.mode == CM_TYPING && !s.pending);
+        cm_menu(&s, false, 2205);
+        assert(!s.picker && cm_layer_mask(&s) == 0);
+    }
+    puts("PASS Raycast reducer: Auto layer0, held-key deferral, return to app, Home cancellation, exact allowlist, all teardown and picker-parent paths");
+}
+
 static void qmk_traces(void) {
     for (unsigned layer = 0; layer < 16; ++layer) {
         maps[layer][0][0] = CM_HOME; maps[layer][0][1] = CM_AUTO;
@@ -257,6 +303,15 @@ static void qmk_traces(void) {
     request(report, 4, 11, 4242, command_mode_state()->epoch, 1, 9); command_mode_handle_report(report, 32);
     assert(report[8] == CM_DEFERRED && command_mode_state()->selection.layer == 6);
     tick(300); assert(action_tapping_is_idle() && command_mode_state()->selection.layer == 9); no_held();
+    edge(1,1,true); tick(10); edge(1,1,false);
+    assert(!action_tapping_is_idle());
+    request(report, 4, 12, 4242, command_mode_state()->epoch, 2, 0); command_mode_handle_report(report, 32);
+    assert(report[8] == CM_DEFERRED && command_mode_state()->selection.layer == 9);
+    tick(300); assert(action_tapping_is_idle() && layer_state == 0 && command_mode_state()->selection.mode == CM_AUTOMATIC); no_held();
+    edge(1,1,true); tick(10); edge(1,1,false);
+    request(report, 4, 13, 4242, command_mode_state()->epoch, 3, 7); command_mode_handle_report(report, 32);
+    assert(report[8] == CM_DEFERRED && layer_state == 0);
+    tick(300); assert(action_tapping_is_idle() && layer_state == (1u << 7)); no_held();
     edge(1,1,true); tick(250); assert(held[ACTION_MODS(1)] == 1); home(); edge(1,1,false); tick(300); no_held();
     for (unsigned reverse = 0; reverse < 2; ++reverse) {
         home(); unsigned start = output_count;
@@ -436,6 +491,6 @@ static void qmk_traces(void) {
 }
 
 int main(void) {
-    reducer_traces(); protocol_traces(); qmk_traces();
+    reducer_traces(); protocol_traces(); raycast_typing_traces(); qmk_traces();
     puts("All command-mode tests passed with UBSan.");
 }

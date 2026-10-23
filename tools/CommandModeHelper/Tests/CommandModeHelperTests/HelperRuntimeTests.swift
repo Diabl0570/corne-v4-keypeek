@@ -1,9 +1,27 @@
+import AppKit
+import Foundation
 import Testing
 import CommandModeCore
 @testable import CommandModeHelper
 
 @Suite @MainActor
 struct HelperRuntimeTests {
+    @Test func appActivationCoalescesAndStopsObserving() {
+        let center = NotificationCenter()
+        let signal = AppActivationSignal(center: center)
+        #expect(!signal.pending)
+        for _ in 0..<3 { center.post(name: NSWorkspace.didActivateApplicationNotification, object: nil) }
+        #expect(signal.pending)
+        signal.clear()
+        #expect(!signal.pending)
+        center.post(name: NSWorkspace.didActivateApplicationNotification, object: nil)
+        #expect(signal.pending)
+        signal.stop()
+        signal.stop()
+        center.post(name: NSWorkspace.didActivateApplicationNotification, object: nil)
+        #expect(!signal.pending)
+    }
+
     @Test func callbackCleanupUsesOriginalContextAcrossRepeatedOpenClose() throws {
         let context = try #require(UnsafeMutableRawPointer(bitPattern: 0x1234))
         var events: [String] = []

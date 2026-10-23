@@ -1,10 +1,10 @@
 {
   "version": 1,
   "source": "backups/2026-10-21-live/corne-v4.1-live-2026-10-21-1631.vil",
-  "transient_bundle_ids": ["com.raycast.macos", "dev.srwi.keypeek", "com.apple.dock", "com.apple.loginwindow", "nl.kaspersprengers.command-mode"],
+  "transient_bundle_ids": ["dev.srwi.keypeek", "com.apple.dock", "com.apple.loginwindow", "nl.kaspersprengers.command-mode"],
   "configurator_bundle_id": "today.vial",
   "layers": [
-    {"id": 0, "name": "Typing", "hue": 0, "saturation": 0, "selector": [0,0]},
+    {"id": 0, "name": "Typing", "hue": 0, "saturation": 0, "selector": [0,0], "automatic": true, "bundle_ids": ["com.raycast.macos"]},
     {"id": 1, "name": "Numbers", "hue": 85, "saturation": 255, "selector": [0,1]},
     {"id": 2, "name": "Symbols", "hue": 191, "saturation": 255, "selector": [0,2]},
     {"id": 3, "name": "Maintenance", "hue": 30, "saturation": 255, "selector": [0,3]},

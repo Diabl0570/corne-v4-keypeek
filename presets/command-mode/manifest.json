@@ -1,6 +1,6 @@
 {
-  "registry_sha256": "0669fe365ff586ae00c6c9726a1ff695ebfe77dfcca80c4bc6898f413f45d666",
-  "registry_hash_u32": 922642694,
+  "registry_sha256": "cedaad75269830cddbcb5046f31678cbd397fbdef34de7939aeba3139a6ea80c",
+  "registry_hash_u32": 1974328014,
   "source_sha256": "eab35d0b53d2e56af2ca69d275762c0980122363a9fd53e82b733d795866c68b",
   "source": "backups/2026-10-21-live/corne-v4.1-live-2026-10-21-1631.vil",
   "baseline_preserves_first_six": true,
@@ -12,14 +12,14 @@
     }
   ],
   "files": {
-    "keyboards/crkbd/vial-kb/vial-qmk/keymaps/vial/command_registry.h": "3f9bb48b0c5f8abb84c5e1bb78eb8dac057ce6634fc397c3abd2b1d7415ab33f",
+    "keyboards/crkbd/vial-kb/vial-qmk/keymaps/vial/command_registry.h": "ea05d61ea45fba3238c73df53af928ed995d41277839cc8afa153687d08e08f7",
     "keyboards/crkbd/vial-kb/vial-qmk/keymaps/vial/command_keymaps.h": "ab1a9dbc715206204bb1500cc4949dcd1a8b13cb05c11c4a9d6ec22901611f41",
     "keyboards/crkbd/vial-kb/vial-qmk/keymaps/vial/command_settings.h": "ed7474e914020b4b4dea94253c706b27bb4e502c01b894909954fb065c6c6807",
-    "tools/CommandModeHelper/Sources/CommandModeCore/Registry.generated.swift": "58a6eca47f67a365f86969f63f481748bac56cfcce4ae3dba6fa08fd00cb6a91",
+    "tools/CommandModeHelper/Sources/CommandModeCore/Registry.generated.swift": "e004cb2c52b294336490c5a77d7a6b1d7152d7191ef1e41b2ed0e9312f697389",
     "presets/command-mode/baseline16.vil": "34c9215bfecb4149c21ac5300639ea38abd2f3ec6110a81294824a3d6df5b3d0",
     "presets/command-mode/experimental16.vil": "803a3c0aab538d3e65a860bf2690b21f4b6f98326dce742fde6301818c7df580",
-    "presets/command-mode/legend.md": "37f6a68f8422236a0ceb371cb1a1d767f31bea03945ca35095dc2fb914e35629",
-    "presets/command-mode/legend.html": "5c4cf0a523736cdfba0c8ebd0839aab7e953eb0a3365803dad478fb43f13e679",
+    "presets/command-mode/legend.md": "a765c8a1684cf2a19f55685b373cbff0a3d3a4e14c8d57a1fca313fba7d83303",
+    "presets/command-mode/legend.html": "1e7537ad1cc7577c1cd82fe07fdb0642528b2cb37f90825af2da983d215c2480",
     "presets/command-mode/migration.md": "807efd43335d60ff68695e610337f9e632be761b3ccd9d8b8d173cce4a104322"
   }
 }

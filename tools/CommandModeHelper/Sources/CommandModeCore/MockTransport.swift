@@ -90,7 +90,7 @@ public final class MockReportTransport: ReportTransport {
                 if requestSession != session || session == 0 { status = .wrongSession }
                 else if report.read32(at: 12) != epoch { status = .staleEpoch }
                 else if mode != .auto || picker { status = .disarmed }
-                else if !(6...10).contains(report[20]) { status = .invalidLayer }
+                else if !CommandRegistry.allowsAutomaticLayer(report[20]) { status = .invalidLayer }
                 else if report.read32(at: 16) <= sequence { status = .staleSequence }
                 else {
                     sequence = report.read32(at: 16)
@@ -143,7 +143,7 @@ public final class MockReportTransport: ReportTransport {
             bytes.write(session, at: 12)
             bytes.write(epoch, at: 16)
             bytes.write(revision, at: 20)
-            let mask: UInt16 = 1 << (picker ? 15 : selectedLayer)
+            let mask: UInt16 = picker ? 1 << 15 : selectedLayer == 0 ? 0 : 1 << selectedLayer
             bytes[24] = UInt8(truncatingIfNeeded: mask)
             bytes[25] = UInt8(truncatingIfNeeded: mask >> 8)
             bytes[26] = 16

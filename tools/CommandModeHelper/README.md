@@ -60,8 +60,12 @@ Running native Vial, bundle `today.vial`, pauses the helper even if Vial is in t
 
 ## App matching and action limits
 
-The generated registry maps `com.openai.codex` to OpenAI desktop, Claude's desktop bundle to Claude, supported browsers to Browser, and Cursor/VS Code to Editor. Unknown apps map to Generic. Raycast, KeyPeek, the system switcher identities, and the helper retain the previous eligible app. These observations cause context reports only while firmware reports an active Auto grant with the current session and epoch. The picker suspends updates. Context changes coalesce to the newest observation and carry a strictly increasing sequence.
+The generated registry maps `com.openai.codex` to OpenAI desktop, Claude's desktop bundle to Claude, supported browsers to Browser, and Cursor/VS Code to Editor. Unknown apps map to Generic. Raycast selects the existing Typing layer0 while keeping Auto armed. Dismissing Raycast follows the next foreground app. KeyPeek, the system switcher identities, and the helper retain the previous eligible app. These observations cause context reports only while firmware reports an active Auto grant with the current session and epoch. The picker suspends updates. Layer0 transitions use the same held-key/tapping deferral as app panels. NSWorkspace activation notifications wake the single polling loop promptly; callbacks never send HID requests. The 250ms poll remains a fallback. Context changes coalesce to the newest observation and carry a strictly increasing sequence.
 
 Bundle identity cannot identify browser tabs or distinguish Claude Chat from its Code composer. The helper has no voice, dictation, typing, shortcut, app-control, or Accessibility action path. `capability <action>` exits with an explicit unsupported error. ChatGPT's F18 binding and guarded external Claude dictation hooks remain separate keyboard actions. No hook is invoked by app focus.
 
 The helper supplies no optional overlay. Firmware high-layer behavior, gesture handling, and coexistence with KeyPeek/Vial require the later authorized hardware verification. The tests exercise actual client and codec code with a deterministic mock; they do not establish physical HID compatibility.
+
+## Raycast typing update
+
+Use the matching firmware and helper together. The updated registry hash is checked before opening a session, so this helper refuses the older firmware instead of sending an unsupported layer0 context. Keep the existing helper available until both halves have the matching firmware. No preset reimport is needed for this change; the current typing keys and home-row mods are reused. See [the Raycast test steps](../../docs/raycast-typing.md).

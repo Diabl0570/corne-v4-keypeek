@@ -146,7 +146,7 @@ public final class CommandClient {
                 }
                 return
             }
-            guard (6...10).contains(desiredLayer) else { throw CommandError.readbackMismatch }
+            guard CommandRegistry.allowsAutomaticLayer(desiredLayer) else { throw CommandError.readbackMismatch }
             guard sequence < UInt32.max else { throw CommandError.counterExhausted }
             sequence += 1
             let acknowledgement = try exchange(.context, epoch: snapshot.epoch,

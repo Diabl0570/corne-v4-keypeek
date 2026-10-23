@@ -110,6 +110,7 @@ final class HelperRuntime {
     }
 
     func run(seconds: TimeInterval?) {
+        let activation = observeApps ? AppActivationSignal() : nil
         signal(SIGINT, SIG_IGN)
         signal(SIGTERM, SIG_IGN)
         let signals = [SIGINT, SIGTERM].map { number in
@@ -134,12 +135,14 @@ final class HelperRuntime {
         stdinSource.resume()
         let deadline = seconds.map { Date().addingTimeInterval($0) }
         defer {
+            activation?.stop()
             stdinSource.cancel()
             signals.forEach { $0.cancel() }
             client.stop()
             print(client.statusDescription)
         }
         while running, deadline.map({ Date() < $0 }) ?? true {
+            activation?.clear()
             let nextTick = Date().addingTimeInterval(0.25)
             let commands = pendingCommands
             pendingCommands.removeAll()
@@ -159,7 +162,7 @@ final class HelperRuntime {
                 print(client.statusDescription)
                 lastStatus = client.statusDescription
             }
-            while running, Date() < nextTick {
+            while running, activation?.pending != true, Date() < nextTick {
                 _ = RunLoop.main.run(mode: .default, before: nextTick)
             }
         }

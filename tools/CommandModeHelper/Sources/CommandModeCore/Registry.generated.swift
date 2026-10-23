@@ -3,9 +3,9 @@ import Foundation
 
 public enum CommandRegistry {
     public static let schemaVersion: UInt8 = 1
-    public static let hash: UInt32 = 0x36FE6906
+    public static let hash: UInt32 = 0x75ADDACE
     public static let entries: [CommandDefinition] = [
-        .init(id: 0, name: "Typing", bundleIDs: [], automatic: false),
+        .init(id: 0, name: "Typing", bundleIDs: ["com.raycast.macos"], automatic: true),
         .init(id: 1, name: "Numbers", bundleIDs: [], automatic: false),
         .init(id: 2, name: "Symbols", bundleIDs: [], automatic: false),
         .init(id: 3, name: "Maintenance", bundleIDs: [], automatic: false),
@@ -22,8 +22,12 @@ public enum CommandRegistry {
         .init(id: 14, name: "Spare", bundleIDs: [], automatic: false),
         .init(id: 15, name: "Picker", bundleIDs: [], automatic: false),
     ]
-    public static let transientBundleIDs: Set<String> = ["com.raycast.macos", "dev.srwi.keypeek", "com.apple.dock", "com.apple.loginwindow", "nl.kaspersprengers.command-mode"]
+    public static let transientBundleIDs: Set<String> = ["dev.srwi.keypeek", "com.apple.dock", "com.apple.loginwindow", "nl.kaspersprengers.command-mode"]
     public static let configuratorBundleID = "today.vial"
+    public static let automaticLayerMask: UInt16 = 0x07C1
+    public static func allowsAutomaticLayer(_ layer: UInt8) -> Bool {
+        layer < 16 && automaticLayerMask & (UInt16(1) << layer) != 0
+    }
     public static func layer(forBundleID bundleID: String) -> UInt8 {
         entries.first { $0.bundleIDs.contains(bundleID) }?.id ?? 6
     }

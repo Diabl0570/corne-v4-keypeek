@@ -5,7 +5,8 @@
 #define CM_LAYER_COUNT 16
 #define CM_GENERIC_LAYER 6
 #define CM_PICKER_LAYER 15
-#define CM_REGISTRY_HASH UINT32_C(0x36FE6906)
-static inline bool cm_auto_layer_valid(uint8_t layer) { return layer >= 6 && layer <= 10; }
+#define CM_REGISTRY_HASH UINT32_C(0x75ADDACE)
+#define CM_AUTOMATIC_LAYER_MASK UINT16_C(0x07C1)
+static inline bool cm_auto_layer_valid(uint8_t layer) { return layer < CM_LAYER_COUNT && (CM_AUTOMATIC_LAYER_MASK & (UINT16_C(1) << layer)); }
 #define CM_LAYER_PALETTE { {0, 0, 0}, {85, 255, 0}, {191, 255, 0}, {30, 255, 0}, {0, 0, 0}, {0, 0, 0}, {128, 255, 0}, {110, 255, 0}, {18, 255, 0}, {160, 255, 0}, {210, 255, 0}, {0, 255, 0}, {45, 255, 0}, {235, 255, 0}, {65, 255, 0}, {128, 80, 0} }
 static const char *const cm_layer_names[16] = { "Typing", "Numbers", "Symbols", "Maintenance", "Reserved 4", "Reserved 5", "Generic commands", "OpenAI desktop", "Claude", "Browser", "Editor", "Mouse", "Review", "Experiments", "Spare", "Picker" };

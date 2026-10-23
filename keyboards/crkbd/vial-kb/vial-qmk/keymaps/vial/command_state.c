@@ -4,12 +4,20 @@
 #include <limits.h>
 #include <string.h>
 
+static void disarm_selection(cm_selection_t *selection) {
+    if (selection->mode == CM_AUTOMATIC) selection->mode = selection->layer == 0 ? CM_TYPING : CM_MANUAL;
+}
+
+static void disarm(cm_state_t *s) {
+    disarm_selection(&s->selection);
+    disarm_selection(&s->picker_parent);
+    s->pending = false;
+}
+
 static void changed(cm_state_t *s) {
     if (s->revision == UINT32_MAX) {
         s->session = 0;
-        s->pending = false;
-        if (s->selection.mode == CM_AUTOMATIC) s->selection.mode = CM_MANUAL;
-        if (s->picker_parent.mode == CM_AUTOMATIC) s->picker_parent.mode = CM_MANUAL;
+        disarm(s);
         s->revision = 0;
     }
     ++s->revision;
@@ -18,19 +26,12 @@ static void changed(cm_state_t *s) {
 static void boundary(cm_state_t *s) {
     if (s->epoch == UINT32_MAX) {
         s->session = 0;
-        if (s->selection.mode == CM_AUTOMATIC) s->selection.mode = CM_MANUAL;
-        if (s->picker_parent.mode == CM_AUTOMATIC) s->picker_parent.mode = CM_MANUAL;
+        disarm(s);
         s->epoch = 0;
     }
     ++s->epoch;
     s->pending = false;
     changed(s);
-}
-
-static void disarm(cm_state_t *s) {
-    if (s->selection.mode == CM_AUTOMATIC) s->selection.mode = CM_MANUAL;
-    if (s->picker_parent.mode == CM_AUTOMATIC) s->picker_parent.mode = CM_MANUAL;
-    s->pending = false;
 }
 
 void cm_init(cm_state_t *s) {
@@ -44,6 +45,7 @@ uint16_t cm_layer_mask(const cm_state_t *s) {
         return (uint16_t)1u << 2 | ((s->selection.mode == CM_TYPING && s->selection.numbers) ? ((1u << 1) | (1u << 3)) : 0);
     }
     if (s->selection.mode == CM_TYPING) return s->selection.numbers ? (1u << 1) : 0;
+    if (s->selection.layer == 0) return 0;
     return (uint16_t)1u << s->selection.layer;
 }
 
@@ -69,7 +71,7 @@ void cm_select(cm_state_t *s, uint8_t layer) {
 }
 
 void cm_auto(cm_state_t *s) {
-    uint8_t layer = cm_auto_layer_valid(s->selection.layer) ? s->selection.layer : CM_GENERIC_LAYER;
+    uint8_t layer = s->selection.layer != 0 && cm_auto_layer_valid(s->selection.layer) ? s->selection.layer : CM_GENERIC_LAYER;
     s->selection = (cm_selection_t){CM_AUTOMATIC, layer, false};
     s->picker = false;
     s->menu = CM_MENU_CONSUMED;

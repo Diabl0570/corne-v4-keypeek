@@ -6,7 +6,7 @@ Menu is the left outer thumb. Tap toggles numbers after the 200ms double-tap win
 
 | ID | Panel | Left keycap in Picker | Matrix | Automatic application |
 |---|---|---|---|---|
-| 0 | Typing | Esc | 0,0 | Manual |
+| 0 | Typing | Esc | 0,0 | com.raycast.macos |
 | 1 | Numbers | Q | 0,1 | Manual |
 | 2 | Symbols | W | 0,2 | Manual |
 | 3 | Maintenance | E | 0,3 | Manual |
@@ -23,7 +23,7 @@ Menu is the left outer thumb. Tap toggles numbers after the 200ms double-tap win
 | 14 | Spare | X | 2,2 | Manual |
 | 15 | Picker | C | 2,3 | Manual |
 
-In Picker, left V selects Auto and left B performs Home. The inner thumbs hold Mirror in command panels and Picker. The right middle thumb keeps its symbols role. Command clusters are duplicated on both halves, so Mouse provides pointer, scroll, buttons and speed without the right hand. Normal Space stays Space; experimental16 alone changes typing Space to tap Space / hold Mirror. Selecting an app panel manually pins it; Auto follows apps only after deliberate Auto selection. Picker15 can be latched deliberately and cancelled by Menu.
+In Picker, left V selects Auto and left B performs Home. The inner thumbs hold Mirror in command panels and Picker. The right middle thumb keeps its symbols role. Command clusters are duplicated on both halves, so Mouse provides pointer, scroll, buttons and speed without the right hand. Normal Space stays Space; experimental16 alone changes typing Space to tap Space / hold Mirror. Selecting an app panel manually pins it; Auto follows apps only after deliberate Auto selection. Raycast temporarily uses the existing Typing layer while Auto stays armed; leaving Raycast follows the next foreground app. Picker15 can be latched deliberately and cancelled by Menu.
 
 ## 6: Generic commands
 
