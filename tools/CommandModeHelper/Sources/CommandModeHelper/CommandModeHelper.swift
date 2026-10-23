@@ -95,7 +95,7 @@ struct CommandModeHelper {
     Ctrl-C quits and closes the session. Pause stays paused until resume.
     Temporary HID failures reconnect with bounded backoff. A new session always starts disarmed.
     status checks descriptors and capabilities without opening a firmware session.
-    dry-run creates only a mock transport. --observe-apps reads bundle IDs through NSWorkspace.
+    dry-run creates only a mock transport. --observe-apps reads bundle IDs and Raycast panel metadata.
     Auto Command must be selected on the keyboard after every start, resume, or reconnect.
     No voice, shortcut, typing, Accessibility, EEPROM, or startup-installation actions exist.
     """
@@ -119,7 +119,7 @@ final class HelperRuntime {
     private let makeClient: () throws -> CommandClient
     private let now: () -> TimeInterval
     private var running = true
-    private var lastBundleID: String?
+    private var lastForegroundStatus: String?
     private var lastStatus: String?
     private var input = ""
     private var pendingCommands: [String] = []
@@ -255,9 +255,10 @@ final class HelperRuntime {
             guard running else { break }
             let current = observation()
             tick(observation: current)
-            if observeApps, current.frontmost != lastBundleID {
-                print("foreground bundle=\(current.frontmost ?? "unknown") context=\(client?.desiredLayer ?? 6)")
-                lastBundleID = current.frontmost
+            let foregroundStatus = "\(current.diagnosticDescription) context=\(client?.desiredLayer ?? 6)"
+            if observeApps, foregroundStatus != lastForegroundStatus {
+                print(foregroundStatus)
+                lastForegroundStatus = foregroundStatus
             }
             if statusDescription != lastStatus {
                 print(statusDescription)

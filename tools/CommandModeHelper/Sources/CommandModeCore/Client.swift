@@ -40,7 +40,9 @@ public final class CommandClient {
     public private(set) var phase: ClientPhase = .stopped
     public private(set) var state: FirmwareState?
     public private(set) var observedBundleID: String?
-    public private(set) var desiredLayer: UInt8 = 6
+    public var desiredLayer: UInt8 {
+        typingOverride ? 0 : observedBundleID.map { CommandRegistry.layer(forBundleID: $0) } ?? 6
+    }
     public private(set) var lastAcknowledgedLayer: UInt8?
     public private(set) var session: UInt32 = 0
     public private(set) var acknowledgementRetries = 0
@@ -49,6 +51,7 @@ public final class CommandClient {
     private var sequence: UInt32 = 0
     private var deliveredContext: ContextReceipt?
     private var vialRunning = false
+    private var typingOverride = false
     private let makeSession: () -> UInt32
     private let timeout: TimeInterval
     private var inFlight = false
@@ -116,10 +119,10 @@ public final class CommandClient {
     public func observe(bundleID: String?) {
         guard let bundleID, !CommandRegistry.transientBundleIDs.contains(bundleID) else { return }
         observedBundleID = bundleID
-        desiredLayer = CommandRegistry.layer(forBundleID: bundleID)
     }
 
-    public func observeApplications(frontmost: String?, runningBundleIDs: Set<String>) {
+    public func observeApplications(frontmost: String?, runningBundleIDs: Set<String>, typingOverride: Bool = false) {
+        self.typingOverride = typingOverride
         vialRunning = runningBundleIDs.contains(CommandRegistry.configuratorBundleID)
         if vialRunning, phase == .ready || phase == .connecting { pause(.vialRunning) }
         observe(bundleID: frontmost)
