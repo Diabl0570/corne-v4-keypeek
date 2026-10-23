@@ -48,6 +48,12 @@ public enum CommandError: Error, Equatable, CustomStringConvertible {
     case incompatibleCapabilities
     case timeout
     case disconnected
+    case deviceNotFound
+    case multipleDevices
+    case hidUnavailable(operation: String, code: Int32)
+    case hidFailure(operation: String, code: Int32)
+    case permissionDenied(Int32)
+    case outputInFlight
     case transport(String)
     case status(ResponseStatus)
     case readbackMismatch
@@ -60,10 +66,33 @@ public enum CommandError: Error, Equatable, CustomStringConvertible {
         case .incompatibleCapabilities: "firmware UID, schema, capabilities, or registry mismatch"
         case .timeout: "command-mode acknowledgement timed out"
         case .disconnected: "device disconnected"
+        case .deviceNotFound: "no Corne Raw HID interface found; waiting for the keyboard"
+        case .multipleDevices: "multiple Corne Raw HID interfaces; connect one keyboard"
+        case .hidUnavailable(let operation, let code): "HID \(operation) temporarily unavailable (\(code))"
+        case .hidFailure(let operation, let code): "HID \(operation) failed (\(code))"
+        case .permissionDenied(let code): "HID access denied (\(code)); check macOS permissions, then resume"
+        case .outputInFlight: "HID output is still pending after the acknowledgement deadline"
         case .transport(let message): message
         case .status(let status): "firmware returned \(status)"
         case .readbackMismatch: "firmware readback does not match acknowledgement"
         case .counterExhausted: "session counter exhausted; restart with a fresh session"
+        }
+    }
+}
+
+public enum FailureRecovery: Equatable {
+    case reconnect
+    case configurationQuietPeriod
+    case stop
+}
+
+extension CommandError {
+    public var recovery: FailureRecovery {
+        switch self {
+        case .timeout, .disconnected, .deviceNotFound, .hidUnavailable, .outputInFlight, .counterExhausted,
+             .status(.wrongSession): .reconnect
+        case .status(.busyConfiguration): .configurationQuietPeriod
+        default: .stop
         }
     }
 }

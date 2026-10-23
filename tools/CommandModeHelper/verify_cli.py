@@ -56,11 +56,24 @@ def main():
             text=True, capture_output=True, timeout=6,
         )
         assert result.returncode == 0, result.stderr
-        assert "phase=ready" in result.stdout, result.stdout
+        trigger = ("mock fault: dropped one acknowledgement" if fault == "timeout"
+                   else "mock fault: keyboard unavailable for one second")
+        assert trigger in result.stdout, result.stdout
+        after_fault = result.stdout.split(trigger, 1)[1]
+        assert "phase=ready" in after_fault, result.stdout
+        assert "phase=failed" not in after_fault, result.stdout
+        assert "phase=blocked" not in after_fault, result.stdout
         assert "explicit resume required" not in result.stdout, result.stdout
         assert "native HID objects=0" in result.stdout, result.stdout
         if fault == "timeout":
-            assert "mode=auto" in result.stdout, result.stdout
+            assert "phase=ready mode=auto" in after_fault, result.stdout
+            assert "retries=1" in after_fault, result.stdout
+            assert "phase=retrying" not in after_fault, result.stdout
+        else:
+            assert "phase=retrying" in after_fault, result.stdout
+            assert after_fault.index("phase=retrying") < after_fault.index("phase=ready"), result.stdout
+            assert "phase=ready mode=typing" in after_fault, result.stdout
+            assert "mode=auto" not in after_fault, result.stdout
         print(f"mock {fault} recovery passed")
 
 

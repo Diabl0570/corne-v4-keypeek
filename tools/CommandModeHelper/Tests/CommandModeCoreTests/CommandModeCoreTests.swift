@@ -68,7 +68,8 @@ struct CommandModeCoreTests {
         }
         let client = client(mock)
         expectError(.timeout) { try client.start() }
-        #expect(mock.outputReports.count == 1)
+        #expect(mock.outputReports.count == 2)
+        #expect(mock.outputReports[0] == mock.outputReports[1])
         #expect(!mock.isOpen)
     }
 
@@ -396,9 +397,91 @@ struct CommandModeCoreTests {
             mock.transformReply = { _ in flood ? Array(repeating: [0xC0], count: 65) : [] }
             let client = client(mock)
             expectError(.timeout) { try client.start() }
-            #expect(mock.outputReports.count == 1)
+            #expect(mock.outputReports.count == 2)
+            #expect(mock.outputReports[0] == mock.outputReports[1])
+            #expect(client.acknowledgementRetries == 1)
             #expect(!mock.isOpen)
         }
+    }
+
+    @Test func lostReplyRetriesIdenticalRequestWithoutReopeningOrDisarming() throws {
+        for opcode in [Opcode.state, .context] {
+            let mock = MockReportTransport()
+            let client = client(mock)
+            try client.start()
+            let originalSession = client.session
+            mock.keyboardSelect(mode: .auto, layer: 6)
+            var dropped = false
+            mock.transformReply = { reply in
+                if !dropped, reply[3] == opcode.rawValue { dropped = true; return [] }
+                return [reply]
+            }
+            client.observe(bundleID: "com.openai.codex")
+            try client.poll()
+            #expect(dropped)
+            #expect(client.phase == .ready)
+            #expect(client.session == originalSession)
+            #expect(mock.openCount == 1)
+            #expect(mock.mode == .auto)
+            #expect(mock.selectedLayer == 7)
+            #expect(client.state?.selectedLayer == 7)
+            #expect(client.acknowledgementRetries == 1)
+            let retry = Array(mock.outputReports.dropFirst(3).filter { $0[3] == opcode.rawValue }.prefix(2))
+            #expect(retry.count == 2)
+            #expect(retry[0] == retry[1])
+            #expect(mock.outputReports.last?[3] == Opcode.state.rawValue)
+        }
+    }
+
+    @Test func homeDuringLostReplyStillDisarmsBeforeRetry() throws {
+        let mock = MockReportTransport()
+        let client = client(mock)
+        try client.start()
+        mock.keyboardSelect(mode: .auto, layer: 6)
+        var dropped = false
+        mock.transformReply = { reply in
+            if !dropped, reply[3] == Opcode.context.rawValue {
+                dropped = true
+                mock.keyboardSelect(mode: .typing, layer: 0)
+                return []
+            }
+            return [reply]
+        }
+        client.observe(bundleID: "com.openai.codex")
+        try client.poll()
+        #expect(client.phase == .ready)
+        #expect(client.state?.mode == .typing)
+        #expect(client.lastAcknowledgedLayer == nil)
+        #expect(mock.selectedLayer == 0)
+        #expect(contextReports(mock).count == 2)
+    }
+
+    @Test func successfulReplyWithContradictorySessionIsTerminal() throws {
+        for inactive in [false, true] {
+            let mock = MockReportTransport()
+            let client = client(mock)
+            try client.start()
+            mock.transformReply = { reply in
+                var reply = reply
+                if inactive { reply[11] &= ~8; reply.write(0, at: 12) }
+                else { reply.write(999, at: 12) }
+                return [reply]
+            }
+            expectError(.readbackMismatch) { try client.poll() }
+            #expect(client.phase == .failed(.readbackMismatch))
+            #expect(CommandError.readbackMismatch.recovery == .stop)
+            #expect(mock.outputReports.count == 4)
+        }
+    }
+
+    @Test func pendingOutputCannotStartParallelRetry() {
+        let transport = PendingOutputTransport()
+        let client = CommandClient(transport: transport)
+        expectError(.outputInFlight) { try client.start() }
+        #expect(transport.sendAttempts == 2)
+        #expect(transport.outputsStarted == 1)
+        #expect(transport.closed)
+        #expect(client.phase == .failed(.outputInFlight))
     }
 
     @Test func homeAfterAcknowledgementWinsOverReadback() throws {
@@ -508,4 +591,20 @@ struct CommandModeCoreTests {
         #expect(mock.session == 0)
         #expect(mock.outputReports.allSatisfy { $0[0] == 0xD3 && $0[1] == 0x43 })
     }
+}
+
+@MainActor
+private final class PendingOutputTransport: ReportTransport {
+    let descriptor = DeviceDescriptor.commandMode
+    var sendAttempts = 0
+    var outputsStarted = 0
+    var closed = false
+    func open() throws {}
+    func close() { closed = true }
+    func send(_ report: [UInt8]) throws {
+        sendAttempts += 1
+        guard outputsStarted == 0 else { throw CommandError.outputInFlight }
+        outputsStarted += 1
+    }
+    func receive(timeout: TimeInterval) throws -> [UInt8]? { nil }
 }

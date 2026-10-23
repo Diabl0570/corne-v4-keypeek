@@ -29,7 +29,11 @@ After supported firmware has been explicitly installed and verified, start in a 
 
 `status` enumerates the target interface and checks capabilities. It does not open a firmware session or renew another client's lease. It exits with a nonzero status if the firmware is unsupported. On an old descriptor it sends zero output reports.
 
-`run` opens a fresh session, verifies its disarmed state, then polls every 250 ms. The firmware lease lasts two seconds. Select Auto Command on the keyboard after every start or resume. Home disarms Auto immediately. A lost connection or failed request releases the handle and requires an explicit `resume`. Resume performs fresh passive discovery and revalidates the replacement descriptor before opening it. A new session pins the last panel and disarms Auto.
+`run` opens a fresh session, verifies its disarmed state, then polls every 250 ms. The firmware lease lasts two seconds. Select Auto Command on the keyboard after every start, resume, or full reconnect. Home disarms Auto immediately. A new session pins the last panel and disarms Auto.
+
+One missed acknowledgement is retried once with the identical request ID and bytes. This can preserve an otherwise healthy session. If both attempts fail, or a transport error occurs, the helper closes the connection and retries discovery after 0.5, 1, 2, 4, then at most 8 seconds between attempts. Starting without the keyboard also waits and reconnects. A successful state poll resets this backoff. Reconnection checks the descriptor and capabilities again and starts a fresh, disarmed session; it never selects Auto for you.
+
+`phase=retrying` means the helper is waiting to reconnect. `phase=ready` means the connection is established; hold Menu and press V if you want Auto again. A firmware mismatch, invalid reply, contradictory readback, or permission error becomes `phase=blocked` instead of retrying forever. Correct that problem, then type `resume`. Use `pause` to stop recovery attempts or `quit` to exit.
 
 Only the exact descriptor is admitted before the first capability request.
 
@@ -40,7 +44,7 @@ Only the exact descriptor is admitted before the first capability request.
 | Product string | `Corne v4 CM1` |
 | Device release | `0x0411` |
 
-Capability acknowledgement must match wire version 1, the 16-layer count, mask width, `0x0F` capabilities, exact Vial UID, schema `0x434D0001`, and generated registry hash. Requests and replies contain exactly 32 bytes. IOHID opens with `kIOHIDOptionsTypeNone`, without seizing the device. The helper never sends KeyPeek C0 subscribe, keepalive, or unsubscribe commands. Incoming Vial and KeyPeek report families are ignored. One request is outstanding at a time, with a 400 ms acknowledgement deadline and a bounded 64-report receive loop. Context acknowledgements require separate state readback. Deferred contexts remain deferred until firmware reports their application.
+Capability acknowledgement must match wire version 1, the 16-layer count, mask width, `0x0F` capabilities, exact Vial UID, schema `0x434D0001`, and generated registry hash. Requests and replies contain exactly 32 bytes. IOHID opens with `kIOHIDOptionsTypeNone`, without seizing the device. The helper never sends KeyPeek C0 subscribe, keepalive, or unsubscribe commands. Incoming Vial and KeyPeek report families are ignored. One request is outstanding at a time, with a 400 ms acknowledgement deadline per attempt and a bounded 64-report receive loop. An unfinished native output prevents a second send and causes reconnect instead. Context acknowledgements require separate state readback. Deferred contexts remain deferred until firmware reports their application.
 
 ## Pause, disable, quit, and uninstall
 
@@ -56,7 +60,9 @@ While `run` is active, enter one of these commands followed by Return.
 
 Ctrl-C and SIGTERM also quit through session cleanup. After a crash or forced termination, firmware disarms at lease expiry. No LaunchAgent, startup item, service, persistent preference, or installation step exists. To uninstall a copied binary, quit it and remove that copy. To remove build products, delete this directory's `.build` folder. The source checkout can remain.
 
-Running native Vial, bundle `today.vial`, pauses the helper even if Vial is in the background. Quitting Vial does not resume it. Firmware `BUSY_CONFIGURATION` also pauses and releases the handle. Wait until configuration is complete and explicitly resume. For browser configurators or other configuration software, issue `pause` before opening or editing the keyboard. The firmware admission hook remains the authority when other configuration traffic appears.
+Running native Vial, bundle `today.vial`, pauses the helper even if Vial is in the background. After Vial quits, the helper waits at least two seconds before reconnecting. Firmware `BUSY_CONFIGURATION` also releases the handle and waits at least two seconds before retrying. Repeated configuration traffic keeps it waiting. These automatic pauses do not override a deliberate `pause` or `disable`: those remain paused until `resume`. For browser configurators or other configuration software, issue `pause` before opening or editing the keyboard. The firmware admission hook remains the authority when other configuration traffic appears.
+
+Recovery does not download updates or flash firmware. It runs the same binary and rechecks compatibility on every connection.
 
 ## App matching and action limits
 

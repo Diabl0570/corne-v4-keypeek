@@ -66,7 +66,7 @@ struct HelperRuntimeTests {
         try runtime.resume()
         #expect(discoveries == 1)
         #expect(runtime.client !== oldClient)
-        #expect(runtime.client.transport === replacement)
+        #expect(runtime.client?.transport === replacement)
         #expect(replacement.mode == .manual)
         #expect(replacement.selectedLayer == 7)
         #expect(!removed.isOpen)
@@ -85,7 +85,7 @@ struct HelperRuntimeTests {
             CommandClient(transport: replacement)
         })
         #expect(throws: CommandError.unsupportedDevice) { try runtime.resume() }
-        #expect(runtime.client.phase == .unsupported)
+        #expect(runtime.recovery == .blocked(.unsupportedDevice))
         #expect(replacement.outputReports.isEmpty)
         #expect(!replacement.isOpen)
         #expect(replacement.openCount == 0)

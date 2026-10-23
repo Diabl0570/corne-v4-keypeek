@@ -20,7 +20,7 @@ Keep the current helper and working UF2 available. Build and review the updated 
 
 App activation notifications wake the helper promptly, with a 250ms polling fallback. Switching still waits for all keys and pending tap/hold decisions to finish. A held shortcut or home-row modifier can therefore delay the change. Check the displayed layer before typing during the first tests. There is no guarantee of zero activation latency.
 
-If the helper stops or disconnects while Raycast is selected, the keyboard remains in Typing and disarms Auto. Restarting the helper does not rearm it. Select Auto again on the keyboard when ready.
+If the helper stops or loses its session while Raycast is selected, the keyboard remains in Typing and disarms Auto. The helper retries a single missed reply, then reconnects automatically after temporary transport failures. A full reconnect does not rearm Auto. When `phase=ready` returns, select Auto again on the keyboard when ready. Typing `pause` prevents automatic recovery until you type `resume`.
 
 ## Software verification
 

@@ -21,7 +21,7 @@ public enum ClientPhase: Equatable, Sendable, CustomStringConvertible {
     case ready
     case paused(PauseReason)
     case unsupported
-    case failed(String)
+    case failed(CommandError)
 
     public var description: String {
         switch self {
@@ -43,6 +43,7 @@ public final class CommandClient {
     public private(set) var desiredLayer: UInt8 = 6
     public private(set) var lastAcknowledgedLayer: UInt8?
     public private(set) var session: UInt32 = 0
+    public private(set) var acknowledgementRetries = 0
     public let transport: any ReportTransport
     private var requestID: UInt32 = 0
     private var sequence: UInt32 = 0
@@ -89,6 +90,7 @@ public final class CommandClient {
         lastAcknowledgedLayer = nil
         sequence = 0
         requestID = 0
+        acknowledgementRetries = 0
         session = makeSession()
         guard session != 0, session != previousSession else {
             try fail(CommandError.transport("session generator must produce a fresh nonzero session"))
@@ -100,15 +102,12 @@ public final class CommandClient {
             try requireOK(capabilities)
             let opened = try exchange(.open)
             try requireOK(opened)
-            guard let openedState = opened.state,
-                  openedState.session == session, openedState.sessionActive,
-                  openedState.mode != .auto else { throw CommandError.readbackMismatch }
+            let openedState = try sessionState(opened)
+            guard openedState.mode != .auto else { throw CommandError.readbackMismatch }
             let readback = try exchange(.state)
             try requireOK(readback)
-            guard let snapshot = readback.state, snapshot.session == session,
-                  snapshot.sessionActive, snapshot.mode != .auto else {
-                throw CommandError.readbackMismatch
-            }
+            let snapshot = try sessionState(readback)
+            guard snapshot.mode != .auto else { throw CommandError.readbackMismatch }
             state = snapshot
             phase = .ready
         } catch { try fail(error) }
@@ -131,8 +130,7 @@ public final class CommandClient {
         do {
             let response = try exchange(.state)
             try requireOK(response)
-            guard let snapshot = response.state, snapshot.session == session,
-                  snapshot.sessionActive else { throw CommandError.readbackMismatch }
+            let snapshot = try sessionState(response)
             state = snapshot
             guard snapshot.mode == .auto, !snapshot.picker else {
                 deliveredContext = nil
@@ -154,21 +152,18 @@ public final class CommandClient {
             if [.staleEpoch, .staleSequence, .disarmed].contains(acknowledgement.status) {
                 let readback = try exchange(.state)
                 try requireOK(readback)
-                guard let verified = readback.state, verified.session == session,
-                      verified.sessionActive else { throw CommandError.readbackMismatch }
+                let verified = try sessionState(readback)
                 state = verified
                 deliveredContext = nil
                 return
             }
             try requireOK(acknowledgement, allowDeferred: true)
-            guard let acknowledgedState = acknowledgement.state,
-                  acknowledgedState.session == session, acknowledgedState.sessionActive,
-                  acknowledgedState.epoch == snapshot.epoch,
+            let acknowledgedState = try sessionState(acknowledgement)
+            guard acknowledgedState.epoch == snapshot.epoch,
                   acknowledgedState.mode == .auto else { throw CommandError.readbackMismatch }
             let readback = try exchange(.state)
             try requireOK(readback)
-            guard let verified = readback.state, verified.session == session,
-                  verified.sessionActive else { throw CommandError.readbackMismatch }
+            let verified = try sessionState(readback)
             state = verified
             if verified.epoch != snapshot.epoch || verified.mode != .auto || verified.picker {
                 deliveredContext = nil
@@ -196,7 +191,7 @@ public final class CommandClient {
     public var statusDescription: String {
         let mode = state.map { String(describing: $0.mode) } ?? "unknown"
         let layer = state.map { String($0.selectedLayer) } ?? "unknown"
-        return "phase=\(phase) mode=\(mode) layer=\(layer) context=\(desiredLayer) session=\(session)"
+        return "phase=\(phase) mode=\(mode) layer=\(layer) context=\(desiredLayer) session=\(session) retries=\(acknowledgementRetries)"
     }
 
     private func releaseSession() {
@@ -217,7 +212,7 @@ public final class CommandClient {
         if case CommandError.status(.busyConfiguration) = error {
             phase = .paused(.configurationTraffic)
         } else {
-            phase = .failed(String(describing: error))
+            phase = .failed(error as? CommandError ?? .transport(String(describing: error)))
         }
         throw error
     }
@@ -226,6 +221,12 @@ public final class CommandClient {
         guard response.status == .ok || (allowDeferred && response.status == .deferred) else {
             throw CommandError.status(response.status)
         }
+    }
+
+    private func sessionState(_ response: Response) throws -> FirmwareState {
+        guard let state = response.state else { throw CommandError.readbackMismatch }
+        guard state.session == session, state.sessionActive else { throw CommandError.readbackMismatch }
+        return state
     }
 
     private func exchange(_ opcode: Opcode, session suppliedSession: UInt32? = nil,
@@ -237,19 +238,26 @@ public final class CommandClient {
         requestID += 1
         let request = Request(opcode: opcode, id: requestID, session: suppliedSession ?? session,
                               epoch: epoch, sequence: sequence, layer: layer)
-        try transport.send(request.bytes)
-        let deadline = Date().addingTimeInterval(timeout)
-        for _ in 0..<64 {
-            let remaining = deadline.timeIntervalSinceNow
-            guard remaining > 0, let bytes = try transport.receive(timeout: remaining) else {
+        for attempt in 0..<2 {
+            try transport.send(request.bytes)
+            let deadline = Date().addingTimeInterval(timeout)
+            do {
+                for _ in 0..<64 {
+                    let remaining = deadline.timeIntervalSinceNow
+                    guard remaining > 0, let bytes = try transport.receive(timeout: remaining) else {
+                        throw CommandError.timeout
+                    }
+                    guard bytes.first == 0xD3, bytes.count >= 2, bytes[1] == 0xAC else { continue }
+                    if bytes.count >= 8,
+                       bytes[3] != opcode.rawValue || bytes.read32(at: 4) != request.id { continue }
+                    let response = try Response.decode(bytes)
+                    guard response.id == request.id, response.opcode == opcode else { continue }
+                    return response
+                }
                 throw CommandError.timeout
+            } catch CommandError.timeout where attempt == 0 {
+                acknowledgementRetries += 1
             }
-            guard bytes.first == 0xD3, bytes.count >= 2, bytes[1] == 0xAC else { continue }
-            if bytes.count >= 8,
-               bytes[3] != opcode.rawValue || bytes.read32(at: 4) != request.id { continue }
-            let response = try Response.decode(bytes)
-            guard response.id == request.id, response.opcode == opcode else { continue }
-            return response
         }
         throw CommandError.timeout
     }

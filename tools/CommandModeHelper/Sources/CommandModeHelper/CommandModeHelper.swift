@@ -43,10 +43,13 @@ struct CommandModeHelper {
         if command == "dry-run" {
             let mock = MockReportTransport()
             let availableAt = Date().addingTimeInterval(1)
-            if options.contains("--simulate-missing") { mock.connected = false }
-            let client = CommandClient(transport: mock)
-            try client.start()
-            if options.contains("--simulate-auto") { mock.keyboardSelect(mode: .auto, layer: 6) }
+            if options.contains("--simulate-missing") {
+                mock.connected = false
+                print("mock fault: keyboard unavailable for one second")
+            }
+            let client = options.contains("--simulate-missing") ? nil : CommandClient(transport: mock)
+            try client?.start()
+            if client != nil, options.contains("--simulate-auto") { mock.keyboardSelect(mode: .auto, layer: 6) }
             if options.contains("--simulate-timeout") {
                 var dropped = false
                 mock.transformReply = { reply in
@@ -69,17 +72,15 @@ struct CommandModeHelper {
             print("mock output reports=\(mock.outputReports.count); native HID objects=0")
             return
         }
-        let transport = try NativeHIDTransport.discover()
-        let client = CommandClient(transport: transport)
         if command == "status" {
+            let transport = try NativeHIDTransport.discover()
+            let client = CommandClient(transport: transport)
             print("descriptor supported=\(transport.descriptor.supported) product=\(transport.descriptor.product)")
             try client.checkCapabilities()
             print("capabilities verified; no session opened; registry=\(String(CommandRegistry.hash, radix: 16))")
             return
         }
-        AppObservation.current().apply(to: client)
-        try client.start()
-        HelperRuntime(client: client, observeApps: true, makeClient: {
+        HelperRuntime(observeApps: true, makeClient: {
             CommandClient(transport: try NativeHIDTransport.discover())
         }).run(seconds: nil)
     }
@@ -87,11 +88,12 @@ struct CommandModeHelper {
     private static let help = """
     command-mode-helper run
     command-mode-helper status
-    command-mode-helper dry-run [--observe-apps] [--seconds 8] [--simulate-auto]
+    command-mode-helper dry-run [--observe-apps] [--seconds 8] [--simulate-auto] [--simulate-timeout | --simulate-missing]
     command-mode-helper capability <action>
 
     run stays in the foreground. Commands on stdin are status, pause, disable, resume, quit.
-    Ctrl-C quits and closes the session. Resume opens a fresh disarmed session.
+    Ctrl-C quits and closes the session. Pause stays paused until resume.
+    Temporary HID failures reconnect with bounded backoff. A new session always starts disarmed.
     status checks descriptors and capabilities without opening a firmware session.
     dry-run creates only a mock transport. --observe-apps reads bundle IDs through NSWorkspace.
     Auto Command must be selected on the keyboard after every start, resume, or reconnect.
@@ -99,30 +101,117 @@ struct CommandModeHelper {
     """
 }
 
+enum RuntimeRecovery: Equatable {
+    case starting
+    case active
+    case waiting(deadline: TimeInterval, reason: CommandError)
+    case userPaused
+    case vialRunning
+    case blocked(CommandError)
+}
+
 @MainActor
 final class HelperRuntime {
-    private(set) var client: CommandClient
+    private(set) var client: CommandClient?
+    private(set) var recovery: RuntimeRecovery
+    private(set) var failures = 0
     private let observeApps: Bool
     private let makeClient: () throws -> CommandClient
+    private let now: () -> TimeInterval
     private var running = true
     private var lastBundleID: String?
     private var lastStatus: String?
     private var input = ""
     private var pendingCommands: [String] = []
 
-    init(client: CommandClient, observeApps: Bool, makeClient: @escaping () throws -> CommandClient) {
+    init(client: CommandClient? = nil, observeApps: Bool,
+         now: @escaping () -> TimeInterval = { ProcessInfo.processInfo.systemUptime },
+         makeClient: @escaping () throws -> CommandClient) {
         self.client = client
+        self.recovery = client?.phase == .ready ? .active : .starting
         self.observeApps = observeApps
         self.makeClient = makeClient
+        self.now = now
+    }
+
+    var statusDescription: String {
+        switch recovery {
+        case .starting: "phase=connecting"
+        case .active: client?.statusDescription ?? "phase=connecting"
+        case .waiting(_, let error): "phase=retrying attempt=\(failures) error=\(error)"
+        case .userPaused: "phase=paused(user)"
+        case .vialRunning: "phase=paused(vialRunning)"
+        case .blocked(let error): "phase=blocked error=\(error); correct the problem, then resume"
+        }
+    }
+
+    func pause() {
+        client?.pause()
+        recovery = .userPaused
     }
 
     func resume() throws {
-        let bundleID = client.observedBundleID
-        client.stop()
-        client = try makeClient()
-        client.observe(bundleID: bundleID)
-        if observeApps { AppObservation.current().apply(to: client) }
-        try client.start()
+        failures = 0
+        recovery = .starting
+        do { try connect(observation: observation()) }
+        catch { recover(error, now: now()); throw error }
+    }
+
+    private func observation() -> AppObservation {
+        observeApps ? .current() : AppObservation(frontmost: nil, runningBundleIDs: [])
+    }
+
+    private func connect(observation: AppObservation) throws {
+        client?.stop()
+        client = nil
+        if observation.runningBundleIDs.contains(CommandRegistry.configuratorBundleID) {
+            recovery = .vialRunning
+            return
+        }
+        let next = try makeClient()
+        client = next
+        observation.apply(to: next)
+        try next.start()
+        recovery = next.phase == .ready ? .active : .vialRunning
+    }
+
+    private func recover(_ error: any Error, now: TimeInterval) {
+        let failure = error as? CommandError ?? .transport(String(describing: error))
+        client?.stop()
+        failures += 1
+        switch failure.recovery {
+        case .stop: recovery = .blocked(failure)
+        case .reconnect, .configurationQuietPeriod:
+            let delay = min(8, 0.5 * pow(2, Double(min(failures - 1, 4))))
+            let minimum: TimeInterval = failure.recovery == .configurationQuietPeriod ? 2 : 0
+            recovery = .waiting(deadline: now + max(minimum, delay), reason: failure)
+        }
+    }
+
+    func tick(observation: AppObservation) {
+        let timestamp = now()
+        if case .userPaused = recovery { return }
+        if case .blocked = recovery { return }
+        if observation.runningBundleIDs.contains(CommandRegistry.configuratorBundleID) {
+            if recovery != .vialRunning { client?.pause(.vialRunning) }
+            recovery = .vialRunning
+            return
+        }
+        if recovery == .vialRunning {
+            recover(CommandError.status(.busyConfiguration), now: timestamp)
+            return
+        }
+        do {
+            switch recovery {
+            case .waiting(let deadline, _) where timestamp < deadline: return
+            case .waiting, .starting: try connect(observation: observation)
+            default: break
+            }
+            guard recovery == .active, let client else { return }
+            observation.apply(to: client)
+            try client.poll()
+            if client.phase == .ready { failures = 0 }
+        } catch { recover(error, now: now()) }
     }
 
     func run(seconds: TimeInterval?) {
@@ -154,8 +243,8 @@ final class HelperRuntime {
             activation?.stop()
             stdinSource.cancel()
             signals.forEach { $0.cancel() }
-            client.stop()
-            print(client.statusDescription)
+            client?.stop()
+            print(client?.statusDescription ?? "phase=stopped")
         }
         while running, deadline.map({ Date() < $0 }) ?? true {
             activation?.clear()
@@ -164,19 +253,15 @@ final class HelperRuntime {
             pendingCommands.removeAll()
             commands.forEach(handle)
             guard running else { break }
-            if observeApps {
-                let observation = AppObservation.current()
-                observation.apply(to: client)
-                if observation.frontmost != lastBundleID {
-                    print("foreground bundle=\(observation.frontmost ?? "unknown") context=\(client.desiredLayer)")
-                    lastBundleID = observation.frontmost
-                }
+            let current = observation()
+            tick(observation: current)
+            if observeApps, current.frontmost != lastBundleID {
+                print("foreground bundle=\(current.frontmost ?? "unknown") context=\(client?.desiredLayer ?? 6)")
+                lastBundleID = current.frontmost
             }
-            do { try client.poll() }
-            catch { print("status error=\(error); explicit resume required") }
-            if client.statusDescription != lastStatus {
-                print(client.statusDescription)
-                lastStatus = client.statusDescription
+            if statusDescription != lastStatus {
+                print(statusDescription)
+                lastStatus = statusDescription
             }
             while running, activation?.pending != true, Date() < nextTick {
                 _ = RunLoop.main.run(mode: .default, before: nextTick)
@@ -186,11 +271,11 @@ final class HelperRuntime {
 
     private func handle(_ command: String) {
         switch command {
-        case "status": print(client.statusDescription)
-        case "pause", "disable": client.pause()
+        case "status": print(statusDescription)
+        case "pause", "disable": pause()
         case "resume":
             do { try resume() }
-            catch { print("resume error=\(error)") }
+            catch { print(statusDescription) }
         case "quit", "q": running = false
         default: print("commands: status, pause, disable, resume, quit")
         }

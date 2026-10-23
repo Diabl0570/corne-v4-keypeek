@@ -30,10 +30,10 @@ final class NativeHIDTransport: ReportTransport {
         ]
         IOHIDManagerSetDeviceMatching(manager, match as CFDictionary)
         guard let devices = IOHIDManagerCopyDevices(manager) as? Set<IOHIDDevice>, !devices.isEmpty else {
-            throw CommandError.transport("no Corne Raw HID interface found")
+            throw CommandError.deviceNotFound
         }
         guard devices.count == 1, let device = devices.first else {
-            throw CommandError.transport("multiple Corne Raw HID interfaces; connect one keyboard")
+            throw CommandError.multipleDevices
         }
         func number(_ key: String) -> Int { (IOHIDDeviceGetProperty(device, key as CFString) as? NSNumber)?.intValue ?? 0 }
         let descriptor = DeviceDescriptor(
@@ -48,8 +48,9 @@ final class NativeHIDTransport: ReportTransport {
     func open() throws {
         guard descriptor.supported else { throw CommandError.unsupportedDevice }
         guard !opened else { return }
-        guard IOHIDDeviceOpen(device, IOOptionBits(kIOHIDOptionsTypeNone)) == kIOReturnSuccess else {
-            throw CommandError.transport("non-seizing IOHIDDeviceOpen failed")
+        let result = IOHIDDeviceOpen(device, IOOptionBits(kIOHIDOptionsTypeNone))
+        guard result == kIOReturnSuccess else {
+            throw Self.error(result, operation: "open")
         }
         opened = true
         disconnected = false
@@ -107,7 +108,7 @@ final class NativeHIDTransport: ReportTransport {
             throw CommandError.transport("refused non-command-mode output")
         }
         guard pendingOutput?.result != nil || pendingOutput == nil else {
-            throw CommandError.transport("an IOHID output is already in flight")
+            throw CommandError.outputInFlight
         }
         let output = PendingOutput(report)
         let context = Unmanaged.passRetained(output).toOpaque()
@@ -121,7 +122,7 @@ final class NativeHIDTransport: ReportTransport {
             }, context
         )
         if result != kIOReturnSuccess { Unmanaged<PendingOutput>.fromOpaque(context).release() }
-        guard result == kIOReturnSuccess else { throw CommandError.transport("IOHID output failed \(result)") }
+        guard result == kIOReturnSuccess else { throw Self.error(result, operation: "send") }
     }
 
     func receive(timeout: TimeInterval) throws -> [UInt8]? {
@@ -129,7 +130,7 @@ final class NativeHIDTransport: ReportTransport {
         while true {
             guard opened, !disconnected else { throw CommandError.disconnected }
             if let result = pendingOutput?.result, result != kIOReturnSuccess {
-                throw CommandError.transport("IOHID output completion failed \(result)")
+                throw Self.error(result, operation: "completion")
             }
             if !reports.isEmpty, pendingOutput?.result != nil { return reports.removeFirst() }
             guard deadline.timeIntervalSinceNow > 0 else { return nil }
@@ -137,6 +138,15 @@ final class NativeHIDTransport: ReportTransport {
         }
     }
 
+    static func error(_ code: IOReturn, operation: String) -> CommandError {
+        switch code {
+        case kIOReturnNotPermitted, kIOReturnNotPrivileged: .permissionDenied(code)
+        case kIOReturnTimeout, kIOReturnNoDevice, kIOReturnNotResponding, kIOReturnOffline,
+             kIOReturnNotOpen, kIOReturnBusy, kIOReturnExclusiveAccess:
+            .hidUnavailable(operation: operation, code: code)
+        default: .hidFailure(operation: operation, code: code)
+        }
+    }
 }
 
 private final class ReportBuffer: @unchecked Sendable {
