@@ -5,6 +5,13 @@ import CommandModeCore
 struct AppObservation {
     let frontmost: String?
     let runningBundleIDs: Set<String>
+    let raycastPanelVisible: Bool
+
+    init(frontmost: String?, runningBundleIDs: Set<String>, raycastPanelVisible: Bool = false) {
+        self.frontmost = frontmost
+        self.runningBundleIDs = runningBundleIDs
+        self.raycastPanelVisible = raycastPanelVisible
+    }
 
     static func current() -> AppObservation {
         AppObservation(
