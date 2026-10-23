@@ -1,0 +1,692 @@
+[
+  {
+    "path": "layout[1][1][0]",
+    "before": "KC_LCTRL",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[1][1][1]",
+    "before": "KC_NO",
+    "after": "KC_LGUI",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[1][1][2]",
+    "before": "KC_NO",
+    "after": "KC_LCTL",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[1][1][3]",
+    "before": "KC_NO",
+    "after": "KC_LALT",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[1][1][4]",
+    "before": "KC_NO",
+    "after": "KC_LGUI",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[1][1][6]",
+    "before": "KC_LALT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[1][5][1]",
+    "before": "KC_NO",
+    "after": "KC_RGUI",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[1][5][2]",
+    "before": "KC_RIGHT",
+    "after": "LCTL_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[1][5][3]",
+    "before": "KC_UP",
+    "after": "RALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[1][5][4]",
+    "before": "KC_DOWN",
+    "after": "RGUI_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[1][5][6]",
+    "before": "KC_RALT",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[2][1][0]",
+    "before": "KC_LCTRL",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[2][1][1]",
+    "before": "KC_NO",
+    "after": "KC_LGUI",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[2][1][2]",
+    "before": "KC_NO",
+    "after": "KC_LCTL",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[2][1][3]",
+    "before": "KC_NO",
+    "after": "KC_LALT",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[2][1][4]",
+    "before": "KC_NO",
+    "after": "KC_LGUI",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[2][1][6]",
+    "before": "KC_LALT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[2][5][1]",
+    "before": "KC_BSLASH",
+    "after": "RGUI_T(KC_BSLASH)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[2][5][2]",
+    "before": "KC_RBRACKET",
+    "after": "LCTL_T(KC_RBRACKET)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[2][5][3]",
+    "before": "KC_LBRACKET",
+    "after": "RALT_T(KC_LBRACKET)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[2][5][4]",
+    "before": "KC_EQUAL",
+    "after": "RGUI_T(KC_EQUAL)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[2][5][6]",
+    "before": "KC_RALT",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[6][1][0]",
+    "before": "KC_LSHIFT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[6][1][1]",
+    "before": "KC_LEFT",
+    "after": "LGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[6][1][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[6][1][3]",
+    "before": "KC_UP",
+    "after": "LALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[6][1][4]",
+    "before": "KC_RIGHT",
+    "after": "LGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[6][1][6]",
+    "before": "KC_NO",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[6][2][0]",
+    "before": "KC_NO",
+    "after": "KC_LSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[6][5][1]",
+    "before": "KC_LEFT",
+    "after": "RGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[6][5][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[6][5][3]",
+    "before": "KC_UP",
+    "after": "RALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[6][5][4]",
+    "before": "KC_RIGHT",
+    "after": "RGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[6][5][6]",
+    "before": "KC_NO",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[6][6][0]",
+    "before": "KC_NO",
+    "after": "KC_LSHIFT",
+    "reason": "mirrored left Shift, no voice action"
+  },
+  {
+    "path": "layout[7][0][6]",
+    "before": "KC_NO",
+    "after": "KC_F18",
+    "reason": "explicit voice action, bracket auxiliary key only"
+  },
+  {
+    "path": "layout[7][1][0]",
+    "before": "KC_LSHIFT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[7][1][1]",
+    "before": "KC_LEFT",
+    "after": "LGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[7][1][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[7][1][3]",
+    "before": "KC_UP",
+    "after": "LALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[7][1][4]",
+    "before": "KC_RIGHT",
+    "after": "LGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[7][1][6]",
+    "before": "KC_NO",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[7][2][0]",
+    "before": "KC_F18",
+    "after": "KC_LSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[7][5][1]",
+    "before": "KC_LEFT",
+    "after": "RGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[7][5][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[7][5][3]",
+    "before": "KC_UP",
+    "after": "RALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[7][5][4]",
+    "before": "KC_RIGHT",
+    "after": "RGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[7][5][6]",
+    "before": "KC_NO",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[7][6][0]",
+    "before": "KC_F18",
+    "after": "KC_LSHIFT",
+    "reason": "mirrored left Shift, no voice action"
+  },
+  {
+    "path": "layout[8][0][6]",
+    "before": "KC_NO",
+    "after": "LCTL(LALT(LSFT(KC_D)))",
+    "reason": "explicit voice action, bracket auxiliary key only"
+  },
+  {
+    "path": "layout[8][1][0]",
+    "before": "KC_LSHIFT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[8][1][1]",
+    "before": "KC_LEFT",
+    "after": "LGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[8][1][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[8][1][3]",
+    "before": "KC_UP",
+    "after": "LALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[8][1][4]",
+    "before": "KC_RIGHT",
+    "after": "LGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[8][1][6]",
+    "before": "KC_NO",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[8][2][0]",
+    "before": "LCTL(LALT(LSFT(KC_D)))",
+    "after": "KC_LSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[8][5][1]",
+    "before": "KC_LEFT",
+    "after": "RGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[8][5][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[8][5][3]",
+    "before": "KC_UP",
+    "after": "RALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[8][5][4]",
+    "before": "KC_RIGHT",
+    "after": "RGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[8][5][6]",
+    "before": "KC_NO",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[8][6][0]",
+    "before": "LCTL(LALT(LSFT(KC_D)))",
+    "after": "KC_LSHIFT",
+    "reason": "mirrored left Shift, no voice action"
+  },
+  {
+    "path": "layout[9][1][0]",
+    "before": "KC_LSHIFT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[9][1][1]",
+    "before": "KC_LEFT",
+    "after": "LGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[9][1][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[9][1][3]",
+    "before": "KC_UP",
+    "after": "LALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[9][1][4]",
+    "before": "KC_RIGHT",
+    "after": "LGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[9][1][6]",
+    "before": "KC_NO",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[9][2][0]",
+    "before": "KC_NO",
+    "after": "KC_LSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[9][5][1]",
+    "before": "KC_LEFT",
+    "after": "RGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[9][5][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[9][5][3]",
+    "before": "KC_UP",
+    "after": "RALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[9][5][4]",
+    "before": "KC_RIGHT",
+    "after": "RGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[9][5][6]",
+    "before": "KC_NO",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[9][6][0]",
+    "before": "KC_NO",
+    "after": "KC_LSHIFT",
+    "reason": "mirrored left Shift, no voice action"
+  },
+  {
+    "path": "layout[10][1][0]",
+    "before": "KC_LSHIFT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[10][1][1]",
+    "before": "KC_LEFT",
+    "after": "LGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[10][1][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[10][1][3]",
+    "before": "KC_UP",
+    "after": "LALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[10][1][4]",
+    "before": "KC_RIGHT",
+    "after": "LGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[10][1][6]",
+    "before": "KC_NO",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[10][2][0]",
+    "before": "KC_NO",
+    "after": "KC_LSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[10][5][1]",
+    "before": "KC_LEFT",
+    "after": "RGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[10][5][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[10][5][3]",
+    "before": "KC_UP",
+    "after": "RALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[10][5][4]",
+    "before": "KC_RIGHT",
+    "after": "RGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[10][5][6]",
+    "before": "KC_NO",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[10][6][0]",
+    "before": "KC_NO",
+    "after": "KC_LSHIFT",
+    "reason": "mirrored left Shift, no voice action"
+  },
+  {
+    "path": "layout[12][1][0]",
+    "before": "KC_LSHIFT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[12][1][1]",
+    "before": "KC_LEFT",
+    "after": "LGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[12][1][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[12][1][3]",
+    "before": "KC_UP",
+    "after": "LALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[12][1][4]",
+    "before": "KC_RIGHT",
+    "after": "LGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[12][1][6]",
+    "before": "KC_NO",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[12][2][0]",
+    "before": "KC_TAB",
+    "after": "KC_LSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[12][5][1]",
+    "before": "KC_LEFT",
+    "after": "RGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[12][5][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[12][5][3]",
+    "before": "KC_UP",
+    "after": "RALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[12][5][4]",
+    "before": "KC_RIGHT",
+    "after": "RGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[12][5][6]",
+    "before": "KC_NO",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[12][6][0]",
+    "before": "KC_TAB",
+    "after": "KC_LSHIFT",
+    "reason": "mirrored left Shift, no voice action"
+  },
+  {
+    "path": "layout[13][1][0]",
+    "before": "KC_LSHIFT",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[13][1][1]",
+    "before": "KC_LEFT",
+    "after": "LGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[13][1][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[13][1][3]",
+    "before": "KC_UP",
+    "after": "LALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[13][1][4]",
+    "before": "KC_RIGHT",
+    "after": "LGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[13][1][6]",
+    "before": "KC_NO",
+    "after": "KC_TAB",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[13][2][0]",
+    "before": "KC_NO",
+    "after": "KC_LSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[13][5][1]",
+    "before": "KC_LEFT",
+    "after": "RGUI_T(KC_LEFT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[13][5][2]",
+    "before": "KC_DOWN",
+    "after": "LCTL_T(KC_DOWN)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[13][5][3]",
+    "before": "KC_UP",
+    "after": "RALT_T(KC_UP)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[13][5][4]",
+    "before": "KC_RIGHT",
+    "after": "RGUI_T(KC_RIGHT)",
+    "reason": "base hold family, existing tap"
+  },
+  {
+    "path": "layout[13][5][6]",
+    "before": "KC_NO",
+    "after": "KC_RSHIFT",
+    "reason": "restore familiar Tab or Shift"
+  },
+  {
+    "path": "layout[13][6][0]",
+    "before": "KC_NO",
+    "after": "KC_LSHIFT",
+    "reason": "mirrored left Shift, no voice action"
+  }
+]

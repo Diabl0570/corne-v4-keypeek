@@ -1,0 +1,36 @@
+{
+  "source": "presets/command-mode/baseline16.vil",
+  "source_sha256": "34c9215bfecb4149c21ac5300639ea38abd2f3ec6110a81294824a3d6df5b3d0",
+  "candidate_sha256": "59c5c850fe0762d6756d9b98af08bfde1234e45ddc457679c846fb13447fd72d",
+  "changed_cells": 115,
+  "covered_layers": [
+    0,
+    1,
+    2,
+    6,
+    7,
+    8,
+    9,
+    10,
+    12,
+    13
+  ],
+  "unchanged_layers": [
+    0,
+    3,
+    4,
+    5,
+    11,
+    14,
+    15
+  ],
+  "all_non_layout_fields_unchanged": true,
+  "compiled_firmware_helper_and_registry_unchanged": true,
+  "requires_flash": false,
+  "fresh_live_export_used": false,
+  "new_preset_imported_or_physically_tested": false,
+  "files": {
+    "home-row-mods16.vil": "59c5c850fe0762d6756d9b98af08bfde1234e45ddc457679c846fb13447fd72d",
+    "changes.json": "047cd0651d6e6cbfc06b86e2486374a2ddabb59c3f4bd88fb3c7e726e0b7f916"
+  }
+}

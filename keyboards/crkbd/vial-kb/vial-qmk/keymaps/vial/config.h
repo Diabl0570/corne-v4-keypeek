@@ -14,3 +14,12 @@
 
 // The custom RGB Matrix output adapter retains the stock WS2812 vendor driver.
 #define WS2812_LED_COUNT RGB_MATRIX_LED_COUNT
+
+#ifdef COMMAND_MODE_ENABLE
+#    undef DYNAMIC_KEYMAP_LAYER_COUNT
+#    define DYNAMIC_KEYMAP_LAYER_COUNT 16
+#    undef PRODUCT
+#    define PRODUCT "Corne v4 CM1"
+#    undef DEVICE_VER
+#    define DEVICE_VER 0x0411
+#endif

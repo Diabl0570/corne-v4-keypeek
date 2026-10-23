@@ -1,0 +1,37 @@
+{
+  "captured_at_utc": "2026-10-21T14:31:57.003500+00:00",
+  "captured_timezone": "Europe/Amsterdam",
+  "capture_method": "Vial 0.7.5: Refresh connected device, File > Save current layout. Fresh live export, not copied from prior backup.",
+  "layout_file": "corne-v4.1-live-2026-10-21-1631.vil",
+  "layout_sha256": "eab35d0b53d2e56af2ca69d275762c0980122363a9fd53e82b733d795866c68b",
+  "layout_bytes": 14426,
+  "layers": 6,
+  "vial_uid": 5010774632021243529,
+  "vial_protocol": 6,
+  "via_protocol": 9,
+  "physical_board": "Corne v4.1 standard, user-confirmed",
+  "firmware_provenance": {
+    "installed_by": "User, both halves, reported before capture",
+    "reported_source_commit": "05a716bac32ea0f5647552490f120bd30896a704",
+    "reported_ci_uf2_sha256": "1bcd524f73faa720b809bdae58ca72b7d2bdc4fd90d254a2cd41347a69cf0f5d",
+    "source_main_commit": "648b0e88a347bf889028339904adb5275928c299",
+    "installed_binary_readback_performed": false
+  },
+  "global_lighting_observed": {
+    "effect": "Cycle Left Right",
+    "brightness_ui_value": 50,
+    "speed_ui_value": 127,
+    "colour_swatch": "red",
+    "numeric_colour_read_this_capture": false,
+    "stored_in_vil": false,
+    "method": "Read Lighting tab after fresh device Refresh; no Save pressed."
+  },
+  "audit": {
+    "macro_slots": 16,
+    "nonempty_macro_slots": 0,
+    "private_machine_paths_in_publication": false,
+    "identical_to_earlier_export": true,
+    "identity_proved_by": "Fresh live export SHA-256 equals earlier export, with parsed equality checked too."
+  },
+  "device_changes_made": []
+}

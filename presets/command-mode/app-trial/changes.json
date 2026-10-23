@@ -1,0 +1,728 @@
+[
+  {
+    "path": "layout[6][0][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][0][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][0][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][0][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][0][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][2][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][2][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][2][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][2][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][2][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][4][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][4][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][4][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][4][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][4][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][6][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][6][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][6][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][6][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[6][6][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][0][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "LALT(LGUI(KC_LEFT))",
+    "reason": "previous sidebar item, Option-Command-Left"
+  },
+  {
+    "path": "layout[7][0][2]",
+    "before": "LGUI(KC_X)",
+    "after": "LALT(LGUI(KC_RIGHT))",
+    "reason": "next sidebar item, Option-Command-Right"
+  },
+  {
+    "path": "layout[7][0][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][0][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][0][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][0][6]",
+    "before": "KC_F18",
+    "after": "LALT(LGUI(KC_SPACE))",
+    "reason": "one-tap dictation, Option-Command-Space"
+  },
+  {
+    "path": "layout[7][2][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][2][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][2][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][2][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][2][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][4][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "LALT(LGUI(KC_LEFT))",
+    "reason": "previous sidebar item, mirrored"
+  },
+  {
+    "path": "layout[7][4][2]",
+    "before": "LGUI(KC_X)",
+    "after": "LALT(LGUI(KC_RIGHT))",
+    "reason": "next sidebar item, mirrored"
+  },
+  {
+    "path": "layout[7][4][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][4][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][4][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][6][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][6][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][6][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][6][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[7][6][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][0][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][0][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][0][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][0][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][0][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][2][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][2][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][2][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][2][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][2][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][4][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][4][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][4][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][4][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][4][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][6][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][6][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][6][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][6][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[8][6][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][0][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][0][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][0][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][0][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][0][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][2][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][2][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][2][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][2][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][2][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][4][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][4][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][4][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][4][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][4][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][6][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][6][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][6][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][6][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[9][6][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][0][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][0][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][0][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][0][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][0][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][2][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][2][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][2][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][2][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][2][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][4][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][4][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][4][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][4][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][4][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][6][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][6][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][6][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][6][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[10][6][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][0][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][0][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][0][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][0][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][0][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][2][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][2][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][2][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][2][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][2][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][4][1]",
+    "before": "LGUI(KC_Z)",
+    "after": "KC_PGUP",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][4][2]",
+    "before": "LGUI(KC_X)",
+    "after": "KC_PGDOWN",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][4][3]",
+    "before": "LGUI(KC_C)",
+    "after": "KC_TAB",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][4][4]",
+    "before": "LGUI(KC_V)",
+    "after": "LSFT(KC_TAB)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][4][5]",
+    "before": "LGUI(KC_F)",
+    "after": "USER00",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][6][1]",
+    "before": "KC_PGUP",
+    "after": "LGUI(KC_Z)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][6][2]",
+    "before": "KC_PGDOWN",
+    "after": "LGUI(KC_X)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][6][3]",
+    "before": "KC_TAB",
+    "after": "LGUI(KC_C)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][6][4]",
+    "before": "LSFT(KC_TAB)",
+    "after": "LGUI(KC_V)",
+    "reason": "five-pair command row swap"
+  },
+  {
+    "path": "layout[13][6][5]",
+    "before": "USER00",
+    "after": "LGUI(KC_F)",
+    "reason": "five-pair command row swap"
+  }
+]

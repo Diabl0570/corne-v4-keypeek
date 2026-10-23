@@ -1,0 +1,44 @@
+{
+  "version": 1,
+  "source": "backups/2026-10-21-live/corne-v4.1-live-2026-10-21-1631.vil",
+  "transient_bundle_ids": ["dev.srwi.keypeek", "com.apple.dock", "com.apple.loginwindow", "nl.kaspersprengers.command-mode"],
+  "configurator_bundle_id": "today.vial",
+  "layers": [
+    {"id": 0, "name": "Typing", "hue": 0, "saturation": 0, "selector": [0,0], "automatic": true, "bundle_ids": ["com.raycast.macos"]},
+    {"id": 1, "name": "Numbers", "hue": 85, "saturation": 255, "selector": [0,1]},
+    {"id": 2, "name": "Symbols", "hue": 191, "saturation": 255, "selector": [0,2]},
+    {"id": 3, "name": "Maintenance", "hue": 30, "saturation": 255, "selector": [0,3]},
+    {"id": 4, "name": "Reserved 4", "hue": 0, "saturation": 0, "selector": [0,4]},
+    {"id": 5, "name": "Reserved 5", "hue": 0, "saturation": 0, "selector": [0,5]},
+    {"id": 6, "name": "Generic commands", "hue": 128, "saturation": 255, "selector": [1,0], "automatic": true, "template": "commands"},
+    {"id": 7, "name": "OpenAI desktop", "hue": 110, "saturation": 255, "selector": [1,1], "automatic": true, "template": "commands", "bundle_ids": ["com.openai.codex"], "bindings": {"2,0": ["KC_F18", "Microphone shortcut, explicit F18"]}},
+    {"id": 8, "name": "Claude", "hue": 18, "saturation": 255, "selector": [1,2], "automatic": true, "template": "commands", "bindings": {"2,0": ["LCTL(LALT(LSFT(KC_D)))", "Dictate in Claude Code, guarded Raycast hook"]}, "bundle_ids": ["com.anthropic.claudefordesktop"]},
+    {"id": 9, "name": "Browser", "hue": 160, "saturation": 255, "selector": [1,3], "automatic": true, "template": "commands", "bundle_ids": ["com.google.Chrome", "com.openai.atlas", "com.apple.Safari", "com.microsoft.edgemac"]},
+    {"id": 10, "name": "Editor", "hue": 210, "saturation": 255, "selector": [1,4], "automatic": true, "template": "commands", "bundle_ids": ["com.todesktop.230313mzl4w4u92", "com.microsoft.VSCode"]},
+    {"id": 11, "name": "Mouse", "hue": 0, "saturation": 255, "selector": [1,5], "template": "mouse"},
+    {"id": 12, "name": "Review", "hue": 45, "saturation": 255, "selector": [2,0], "template": "review"},
+    {"id": 13, "name": "Experiments", "hue": 235, "saturation": 255, "selector": [2,1], "template": "commands"},
+    {"id": 14, "name": "Spare", "hue": 65, "saturation": 255, "selector": [2,2]},
+    {"id": 15, "name": "Picker", "hue": 128, "saturation": 80, "selector": [2,3]}
+  ],
+  "controls": {"auto": [2,4], "home": [2,5], "mirror_left": [3,5], "mirror_right": [7,5]},
+  "templates": {
+    "commands": {
+      "0,0": ["KC_ESCAPE", "Escape"], "0,1": ["LGUI(KC_Z)", "Undo"], "0,2": ["LGUI(KC_X)", "Cut"], "0,3": ["LGUI(KC_C)", "Copy"], "0,4": ["LGUI(KC_V)", "Paste"], "0,5": ["LGUI(KC_F)", "Find"],
+      "1,0": ["KC_LSHIFT", "Shift, hold to select"], "1,1": ["KC_LEFT", "Left"], "1,2": ["KC_DOWN", "Down"], "1,3": ["KC_UP", "Up"], "1,4": ["KC_RIGHT", "Right"], "1,5": ["LGUI(KC_A)", "Select all"],
+      "2,1": ["KC_PGUP", "Page up"], "2,2": ["KC_PGDOWN", "Page down"], "2,3": ["KC_TAB", "Next focus"], "2,4": ["LSFT(KC_TAB)", "Previous focus"]
+    },
+    "mouse": {
+      "0,0": ["KC_ACL0", "Slow"], "0,1": ["KC_ACL1", "Medium"], "0,2": ["KC_ACL2", "Fast"], "0,3": ["KC_BTN1", "Left click"], "0,4": ["KC_BTN2", "Right click"], "0,5": ["KC_BTN3", "Middle click"],
+      "1,0": ["KC_WH_L", "Scroll left"], "1,1": ["KC_MS_L", "Pointer left"], "1,2": ["KC_MS_D", "Pointer down"], "1,3": ["KC_MS_U", "Pointer up"], "1,4": ["KC_MS_R", "Pointer right"], "1,5": ["KC_WH_R", "Scroll right"],
+      "2,0": ["KC_ESCAPE", "Escape"], "2,1": ["KC_WH_U", "Scroll up"], "2,2": ["KC_WH_D", "Scroll down"], "2,3": ["KC_BTN1", "Drag, hold"], "2,4": ["KC_BTN2", "Right click"]
+    },
+    "review": {
+      "0,0": ["KC_ESCAPE", "Escape"], "0,1": ["KC_HOME", "Home"], "0,2": ["KC_END", "End"], "0,3": ["KC_PGUP", "Page up"], "0,4": ["KC_PGDOWN", "Page down"], "0,5": ["LGUI(KC_F)", "Find"],
+      "1,0": ["KC_LSHIFT", "Shift, hold to select"], "1,1": ["KC_LEFT", "Left"], "1,2": ["KC_DOWN", "Down"], "1,3": ["KC_UP", "Up"], "1,4": ["KC_RIGHT", "Right"], "1,5": ["LGUI(KC_C)", "Copy"],
+      "2,0": ["KC_TAB", "Next focus"], "2,1": ["LSFT(KC_TAB)", "Previous focus"], "2,2": ["KC_SPACE", "Space"], "2,3": ["KC_ENTER", "Enter"]
+    }
+  },
+  "action_sources": ["https://support.apple.com/en-us/102650"],
+  "action_limits": ["App panels use standard macOS edit/navigation keys. App-specific behavior still needs physical validation.", "F18 and Claude's guarded Raycast hook are explicit user actions. No helper focus event invokes them.", "The installed ChatGPT app uses com.openai.codex; there is one OpenAI desktop profile.", "Claude Chat versus Code and browser tabs are not distinguished by bundle ID."]
+}

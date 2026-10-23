@@ -1,0 +1,34 @@
+{
+  "source_commit": "dd43959ae5c08d8a28d38a1acf7b04e86b14a344",
+  "patch_sha256": "8081fb79fc0d763ae444667d7bbb245a367691ec070a1694b56629ef00b2d21a",
+  "files": {
+    "quantum/keyboard.c": {
+      "original": "b5a772541619667003090ba9ea686463457cbadfcc4f9148f17a3a12fbe32257",
+      "patched": "9f44b61c41dc0941ea99337e76b3a3164f32138a6fa5d5e0b9d4a7f52ae2d402"
+    },
+    "quantum/via.c": {
+      "original": "f8d0220363b944b8826cefee178a825422e369e5cdf4f233a45a846a4eb40f63",
+      "patched": "df6f921ece917f96c6d2e0df1f096ca1681a4750332ab2a5fedfeb9163f011b4"
+    },
+    "quantum/action.c": {
+      "original": "d90caae3b349faca2f7ba33f663126152a4d6b3471b9ffdc2e689595d48b7edb",
+      "patched": "e40155f3ef1c7a459b4bbfaa22cac0ac2eac73af1a53c3e79300b984ccf96b6e"
+    },
+    "quantum/action_tapping.c": {
+      "original": "2b8fbb2f149004a8dbb38578f49f07cd8f1d82c25be450f2450f20a05286924c",
+      "patched": "2c9b2c17d6c25a41335b3e2f8bf1665d814d6c85fe471a211c7c8dc707325695"
+    },
+    "quantum/action_tapping.h": {
+      "original": "5391e6db8111db0590b0e4add05b45b90ff356993c161a0f5ee0458ffa16e7e8",
+      "patched": "85f6bfdbcccba790483648ce50e7b2fc608bcc5eb33c807c6134bb4dad57dad9"
+    },
+    "quantum/eeconfig.c": {
+      "original": "bd58a23aa7250d28314a6dc84286868dd403969b4cb865ffe80c6003675f8d4d",
+      "patched": "430c11958e5305a2919881bbde870c08923581d45f06c270bae29e69861f65f0"
+    },
+    "quantum/action_layer.c": {
+      "original": "19d24a8e2a7d64ee28fa9c99b0981083b109718f09cdd96661cad562eb600ae5",
+      "patched": "1e434220f6c87c5f216bcd7dd0956667c3f2174115a8f0a10cfd25c2effee65f"
+    }
+  }
+}
