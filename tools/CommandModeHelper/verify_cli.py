@@ -50,6 +50,19 @@ def main():
     assert "unsupported action" in unsupported.stderr
     print("unsupported capability exits 1")
 
+    for fault in ["timeout", "missing"]:
+        result = subprocess.run(
+            [binary, "dry-run", "--seconds", "3", "--simulate-auto", f"--simulate-{fault}"],
+            text=True, capture_output=True, timeout=6,
+        )
+        assert result.returncode == 0, result.stderr
+        assert "phase=ready" in result.stdout, result.stdout
+        assert "explicit resume required" not in result.stdout, result.stdout
+        assert "native HID objects=0" in result.stdout, result.stdout
+        if fault == "timeout":
+            assert "mode=auto" in result.stdout, result.stdout
+        print(f"mock {fault} recovery passed")
+
 
 if __name__ == "__main__":
     main()

@@ -25,7 +25,7 @@ struct CommandModeHelper {
             throw CommandError.transport("unknown command; use --help")
         }
         let options = Array(arguments.dropFirst())
-        let allowed = command == "dry-run" ? ["--observe-apps", "--seconds", "--simulate-auto"] : []
+        let allowed = command == "dry-run" ? ["--observe-apps", "--seconds", "--simulate-auto", "--simulate-timeout", "--simulate-missing"] : []
         var seconds: TimeInterval? = command == "dry-run" ? 8 : nil
         var index = 0
         while index < options.count {
@@ -42,12 +42,28 @@ struct CommandModeHelper {
         }
         if command == "dry-run" {
             let mock = MockReportTransport()
+            let availableAt = Date().addingTimeInterval(1)
+            if options.contains("--simulate-missing") { mock.connected = false }
             let client = CommandClient(transport: mock)
             try client.start()
             if options.contains("--simulate-auto") { mock.keyboardSelect(mode: .auto, layer: 6) }
+            if options.contains("--simulate-timeout") {
+                var dropped = false
+                mock.transformReply = { reply in
+                    if !dropped, reply[3] == Opcode.state.rawValue {
+                        dropped = true
+                        print("mock fault: dropped one acknowledgement")
+                        return []
+                    }
+                    return [reply]
+                }
+            }
             let runtime = HelperRuntime(
                 client: client, observeApps: options.contains("--observe-apps"),
-                makeClient: { CommandClient(transport: mock) }
+                makeClient: {
+                    if options.contains("--simulate-missing") { mock.connected = Date() >= availableAt }
+                    return CommandClient(transport: mock)
+                }
             )
             runtime.run(seconds: seconds)
             print("mock output reports=\(mock.outputReports.count); native HID objects=0")
